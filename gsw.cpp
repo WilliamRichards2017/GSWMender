@@ -83,13 +83,13 @@ struct Variant{
   string ref;
   std::pair<string, string> sv;
   int pos;
+
 };
+
 
 struct Traceback {
 
-  //height of scorematrix                                                                                                                                                           
   const vector<Node *> _subjectNodes;
-  //Graph alignment                                                                                                                                                                 
   GraphAlignment * ga;
 
   int** buildArray2D(unsigned height, unsigned width){
@@ -127,12 +127,13 @@ struct Traceback {
 
   }
   
-  int **buildTB(){
+  vector<int **> buildTB(){
 
     map<Node *, vector< vector< vector<int> > >, less<Node *> > GS = ga->getScoreMatrix();
 
 
     int l2 = ga->getQueryLength();
+    vector<int** > TBMs;
 
     for (vector<Node *>::const_iterator iter = _subjectNodes.begin(); iter != _subjectNodes.end(); iter++) {
       Node * node = * iter;
@@ -183,11 +184,48 @@ struct Traceback {
 	std::cout << std::endl;
       }
       std::cout << std::endl;
-    }
-  }
+      TBMs.push_back(TBM);
+    }// end of node loop
+    return TBMs;
+  }// end of buildTB()
 };
 
 
+struct PileUp{
+  //traceback matrices
+  vector<int**> tbs;
+  int h;
+  int w;
+
+  int** sumTracebacks() {
+    
+    //NOTE: Must free this memory by hand, DONT FORGET!!!!!
+    //int** sumMatrix = (int **)calloc(w*h, sizeof(int*));
+    int sumMatrix[h][w];
+    memset(sumMatrix, 0, sizeof sumMatrix);
+
+    for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
+      int** tb = *it;
+      for(unsigned i = 0; i < h; i++){
+	for(unsigned j = 0; j < w; j++) {
+	  sumMatrix[i][j] += tb[i][j];
+	}
+      }
+    } // end of auto
+
+    std::cout << "---------SumMatrix----------\n";
+    for (int i = 0; i < h; i++){
+      for(int j = 0; j < w; j++){
+	std::cout << sumMatrix[i][j] << ' ';
+      }
+      std::cout << std::endl;
+    }
+    std::cout << "---------SumMatrix----------\n";
+
+
+    
+  }
+};
 
 
 //------------------------------------------------------------------------------
@@ -496,7 +534,8 @@ int main (int argc, char *argv[]) {
   arg.longId = "query"; 
   arg.description = "Query sequence";
   arg.required = false; 
-  arg.defaultValueString = "CTATTTTAGTAGGTTGTTA"; 
+  //arg.defaultValueString = "CTATTTTAGTAGGTTGTTA"; 
+  arg.defaultValueString = "ATCGAAGATCCATGT";
   //arg.defaultValueString = "ACGT";
   arg.type = "string"; 
   arg.multi = false; 
@@ -678,24 +717,24 @@ int main (int argc, char *argv[]) {
   //----------------------------------------------------------------------------
   //----------------------------------------------------------------------------
 
-  string ref = "CTATTTTAGTAGTTGTTGTTA";
-  pair<string, string> sv = std::make_pair("GTT", "G");
-  int pos = 11;
+  ///  string ref = "CTATTTTAGTAGTTGTTGTTA";
+  /// pair<string, string> sv = std::make_pair("GTT", "G");
+  /// int pos = 11;
 
-  // subject = "ATCCAGTAATCCGGGATCCAT";
-   // query = "ATCGAAGATCCATGT";
-  //pair<string, string> sv = std::make_pair("AATCC", "A");
-  //int pos = 7;
+  string ref = "ATCCAGTAATCCGGGATCCAT";
+  //query = "ATCGAAGATCCATGT";
+  pair<string, string> sv = std::make_pair("AATCC", "A");
+  int pos = 7;
   //subject = "ACGT";
   //query = "ACGT";
   //pair<string, string> sv = std::make_pair("", "");
   //int pos = 4;
 
   Variant v1;
-  v1.ref = subject;
+  v1.ref = ref;
   v1.sv = sv;
   v1.pos = pos;
-  
+
   vector<string> strings = getNodes(v1);
   cout << "\n" << strings[0] << ", " << strings[1] << ", " << strings[2] << ", " << strings[3] << std::endl;
   
@@ -713,6 +752,17 @@ int main (int argc, char *argv[]) {
     //ga->printTBMatrix(* iter, cout);
   }
   
+  Traceback TB = {subjectNodes, ga};
+  vector<int**> before = TB.buildTB();
+  
+  vector<int**> pileups;
+  pileups.push_back(before[0]);
+  pileups.push_back(before[0]);
+
+
+  PileUp p = {pileups, 16, 8};
+
+  p.sumTracebacks();
 
   Graph g = refit(subjectNodes, ga, query, M, X, GI, GE, debug);
   ga = g.alignment;
@@ -720,39 +770,9 @@ int main (int argc, char *argv[]) {
 
   ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
   
-  map<Node *, vector< vector< vector< vector<bool> > > >, less<Node *> > GT = ga->getTBMatrix();
-  map<Node *, vector< vector< vector<int> > >, less<Node *> > GS = ga->getScoreMatrix();
-  
-  for (vector<Node *>::const_iterator iter = subjectNodes.begin(); iter!= subjectNodes.end(); iter++){
-    Node * contributorNode = * iter;
-    vector< vector< vector< vector<bool> > > > TC = GT[contributorNode]; // traceback matrices                                                                                                                                              
-    vector< vector< vector< int> > > SC = GS[contributorNode];
+  Traceback TBAfter = {subjectNodes, ga};
+  vector<int**> after = TBAfter.buildTB();
 
-    string s1 = contributorNode->getSequence();
-    int l1 = s1.length();
-    int l2 = query.length();
-    
-    int MVM[l2][l1]; // max value matrix
-
-        
-    for (int i1=1; i1<=l1; i1++){
-      for(int i2=1; i2<=l2; i2++){
-	//MVM[i2-1][i1-1] = max(SC[i2][i1][0], SC[i2][i1][1]);
-	//MVM[i2-1][i1-1] = max(MVM[i2][i1], SC[i2][i1][2]);
-	//int maxVal = max(SC[i2][i1][0], SC[i2][i1][1]);
-	//maxVal = max(MVM[i2][i1], SC[i2][i1][2]);
-	//cout << "max value is: " << maxVal << std::endl;
-	//cout << "i1 is: " << i1 << "  i2 is: " << i2 << std::endl;
-
-      }
-    }
-  }
-  
-  Traceback TB = {subjectNodes, ga};
-  int** tbMatrix = TB.buildTB();
-  
-
-  ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
   cout << "Optimal score of GSW: " << ga->getScore() << endl;
   cout << "Global Cigar:" << ga->getGlobalCigar() << endl;
   cout << "Global Alignment:" << endl << ga->getGlobalAlignment() << endl;
@@ -763,8 +783,8 @@ int main (int argc, char *argv[]) {
     Node * node = * iter;
     string cigar = ga->getNodeCigar(node);
     int offset = ga->getNodeOffset(node);
-    cout << "  Node=" << node->getId() << " CIGAR=" << cigar << " offset=" << offset << endl;
-    ga->printMatrix(node, cout);
+    //cout << "  Node=" << node->getId() << " CIGAR=" << cigar << " offset=" << offset << endl;
+    //ga->printMatrix(node, cout);
   }
 }
 
