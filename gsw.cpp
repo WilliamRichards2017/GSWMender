@@ -49,6 +49,7 @@ using namespace TCLAP;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 // typedefs
@@ -86,6 +87,69 @@ struct Variant{
 
 };
 
+vector<string > getNodes(Variant v){
+  vector<string> strings;
+  string s1 = v.ref.substr(0, v.pos);
+  string s2 = v.sv.first;
+  string s3 = v.sv.second;
+  string s4 = v.ref.substr(v.pos + v.sv.first.length(), v.ref.length());
+  strings.push_back(s1);
+  strings.push_back(s2);
+  strings.push_back(s3);
+  strings.push_back(s4);
+
+  cout << " ref path is: " << s1 + s2 + s4 << std::endl;
+  cout << "alt path is:  " << s1 + s3 + s4 << std::endl;
+  return strings;
+}
+
+vector<Node *> buildDiamondGraph(vector<string> strings){
+
+  vector<Node *> subjectNodes;
+
+  vector<Node * > contributors1;
+  Node * node1 = new Node(
+			  "node1",
+			  strings[0],
+			  contributors1,
+			    0
+			  );
+  subjectNodes.push_back(node1);
+  
+  vector<Node *> contributors2;
+  contributors2.push_back(node1);
+  Node * node2 = new Node(
+			  "node2",
+			  strings[1],
+			  contributors2,
+			    1
+			  );
+
+  subjectNodes.push_back(node2);
+
+  vector<Node *> contributors3;
+  contributors3.push_back(node1);
+  Node * node3 = new Node(
+			  "node3",
+			  strings[2],
+			  contributors3,
+			    2
+			  );
+  subjectNodes.push_back(node3);
+
+  vector<Node *> contributors4;
+  contributors4.push_back(node2);
+  contributors4.push_back(node3);
+
+  Node * node4 =  new Node(
+			   "node4",
+			   strings[3],
+			   contributors4,
+			     0
+			   );
+  subjectNodes.push_back(node4);
+  return subjectNodes;
+}
 
 struct Traceback {
 
@@ -124,7 +188,23 @@ struct Traceback {
     }
     pair<int, int> coords = std::make_pair(x,y);
     return coords;
+    
+  }
 
+  
+  vector<std::pair<int, int> > buildMatrixSizeVector() {
+    int h = ga->getQueryLength()+1;
+    vector<std::pair<int,int> > dimsVec;
+  
+    for(auto it = std::begin(_subjectNodes); it != std::end(_subjectNodes); ++it){
+      Node * node = * it;
+      //int w = node->getSequence().length()+1;
+      //std::pair<int, int> dims = std::make_pair(h,w);
+      //dimsVec.push_back(dims);
+
+      dimsVec.push_back(std::make_pair(h,node->getSequence().length()+1));
+    }
+    return dimsVec;
   }
   
   vector<int **> buildTB(){
@@ -193,15 +273,55 @@ struct Traceback {
 
 struct PileUp{
   //traceback matrices
-  vector<int**> tbs;
-  int h;
-  int w;
+  vector<Traceback> tbs;
+  vector<Variant> variants;
 
-  int** sumTracebacks() {
+  vector<vector<string> > getAllNodes(){
+
+    vector<vector<string> > allNodes;
+    for(auto it = std::begin(variants); it != std::end(variants); ++it){
+      Variant v = *it;
+      vector<string> nodes = getNodes(v);
+      allNodes.push_back(nodes);
+    }
+    return allNodes;
+  }
+
+  
+  vector<vector<Node *> >buildAllGraphs(vector<vector<string> > allStrings){
+
+    vector<vector<Node *> > allGraphs;
+    
+    for(auto it = std::begin(allStrings); it != std::end(allStrings); ++it){
+      vector<string> strings = *it;
+      vector<Node *> graph = buildDiamondGraph(strings);
+      allGraphs.push_back(graph);
+    }
+    return allGraphs;
+  }
+
+  vector <int**> sumTracebacks() {
     
     //NOTE: Must free this memory by hand, DONT FORGET!!!!!
     //int** sumMatrix = (int **)calloc(w*h, sizeof(int*));
-    int sumMatrix[h][w];
+
+    vector<int**>  sumMatrix;
+    
+    vector<vector<string> > strings = getAllNodes();
+    vector<vector<Node *> > nodes = buildAllGraphs(strings);
+
+    int count = 0;
+    for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
+      Traceback tb = *it;
+      vector<int**> matrices = tb.buildTB();
+      vector<std::pair<int, int> > dims = tb.buildMatrixSizeVector();
+      vector<Node *> subjectNodes = tb._subjectNodes;
+      
+      
+      
+    }
+
+    /*int sumMatrix[h][w];
     memset(sumMatrix, 0, sizeof sumMatrix);
 
     for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
@@ -221,9 +341,9 @@ struct PileUp{
       std::cout << std::endl;
     }
     std::cout << "---------SumMatrix----------\n";
+    */
 
-
-    
+    return sumMatrix;
   }
 };
 
@@ -329,70 +449,6 @@ GraphAlignment *updateGA(vector<Node *> subjectNodes, string query, int M, int X
   GraphAlignment * ga;
   ga = new GraphAlignment(subjectNodes, query, M, X, GI, GE, debug);
   return ga;
-}
-
-vector<Node *> buildDiamondGraph(vector<string> strings){
-
-  vector<Node *> subjectNodes;
-
-  vector<Node * > contributors1;
-  Node * node1 = new Node(
-			  "node1",
-			  strings[0],
-			  contributors1,
-			  0
-			  );
-  subjectNodes.push_back(node1);
-  
-  vector<Node *> contributors2;
-  contributors2.push_back(node1);
-  Node * node2 = new Node(
-			  "node2",
-			  strings[1],
-			  contributors2,
-			  1
-			  );
-
-  subjectNodes.push_back(node2);
-
-  vector<Node *> contributors3;
-  contributors3.push_back(node1);
-  Node * node3 = new Node(
-			  "node3",
-			  strings[2],
-			  contributors3,
-			  2
-			  );
-  subjectNodes.push_back(node3);
-
-  vector<Node *> contributors4;
-  contributors4.push_back(node2);
-  contributors4.push_back(node3);
-
-  Node * node4 =  new Node(
-		  "node4",
-		  strings[3],
-		  contributors4,
-		  0
-		  );
-  subjectNodes.push_back(node4);
-  return subjectNodes;
-}
-
-vector<string > getNodes(Variant v){
-  vector<string> strings;
-  string s1 = v.ref.substr(0, v.pos);
-  string s2 = v.sv.first;
-  string s3 = v.sv.second;
-  string s4 = v.ref.substr(v.pos + v.sv.first.length(), v.ref.length());
-  strings.push_back(s1);
-  strings.push_back(s2);
-  strings.push_back(s3);
-  strings.push_back(s4);
-  
-  cout << " ref path is: " << s1 + s2 + s4 << std::endl;
-  cout << "alt path is:  " << s1 + s3 + s4 << std::endl;
-  return strings;    
 }
 
 Graph pushToRef(vector<Node * > subjectNodes, GraphAlignment *ga, string query, int M, int X, int GI, int GE, bool debug){
@@ -721,46 +777,50 @@ int main (int argc, char *argv[]) {
   /// pair<string, string> sv = std::make_pair("GTT", "G");
   /// int pos = 11;
 
-  string ref = "ATCCAGTAATCCGGGATCCAT";
-  //query = "ATCGAAGATCCATGT";
-  pair<string, string> sv = std::make_pair("AATCC", "A");
+  string query1 = "ATCCAGTAATCCGGGATCCAT";
+  string query2 = "ATCCAGTATCCGGGATCCAT";
+
+  pair<string, string> sv1 = std::make_pair("AATCC", "A");
+  pair<string, string> sv2 = std::make_pair("ATCC", "A");
+
   int pos = 7;
-  //subject = "ACGT";
-  //query = "ACGT";
-  //pair<string, string> sv = std::make_pair("", "");
-  //int pos = 4;
 
-  Variant v1;
-  v1.ref = ref;
-  v1.sv = sv;
-  v1.pos = pos;
 
-  vector<string> strings = getNodes(v1);
-  cout << "\n" << strings[0] << ", " << strings[1] << ", " << strings[2] << ", " << strings[3] << std::endl;
+  Variant v1 = {query1, sv1, pos};
+  Variant v2 = {query2, sv2, pos};
+
+  vector<string> strings1 = getNodes(v1);
+  vector<string> strings2 = getNodes(v2);
+
+    //cout << "\n" << strings[0] << ", " << strings[1] << ", " << strings[2] << ", " << strings[3] << std::endl;
   
-  vector<Node *> subjectNodes = buildDiamondGraph(strings);
+  vector<Node *> subjectNodes = buildDiamondGraph(strings1);
+  vector<Node *> subjectNodes2 = buildDiamondGraph(strings2);
 
 
   GraphAlignment * ga;
-  for (int i=1; i<2; i++) {
-    ga = new GraphAlignment(subjectNodes, query, M, X, GI, GE, debug);
-  }
-
+  GraphAlignment * ga2;
+  ga = new GraphAlignment(subjectNodes, query1, M, X, GI, GE, debug);
+  ga2 = new GraphAlignment(subjectNodes2, query2, M, X, GI, GE, debug);
+  
 
   for (vector<Node *>::const_iterator iter = subjectNodes.begin(); iter!= subjectNodes.end(); iter++){
     //ga->printMatrix(* iter, cout);
     //ga->printTBMatrix(* iter, cout);
   }
   
-  Traceback TB = {subjectNodes, ga};
-  vector<int**> before = TB.buildTB();
+  Traceback t1 = {subjectNodes, ga};
+  // vector<int**> TB1 = t1.buildTB();
+
+  Traceback t2 = {subjectNodes2, ga2};
+  //vector<int**> TB2 = t2.buildTB();
+
+  vector<Traceback> tracebacks;
+  tracebacks.push_back(t1);
+  tracebacks.push_back(t2);
   
-  vector<int**> pileups;
-  pileups.push_back(before[0]);
-  pileups.push_back(before[0]);
 
-
-  PileUp p = {pileups, 16, 8};
+  PileUp p = {tracebacks};
 
   p.sumTracebacks();
 

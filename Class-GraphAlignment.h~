@@ -119,6 +119,8 @@ public:
   // getNodeoffset
   int getNodeOffset(Node *);
 
+  int *getTraceBackPointer(Node *);
+
   map<Node *, vector< vector< vector<int> > >, less<Node *> > getScoreMatrix(); // Score matrices                                                                                                                                                           
   map<Node *, vector< vector< vector< vector<bool> > > >, less<Node *> > getTBMatrix(); // traceback matrices  
 
