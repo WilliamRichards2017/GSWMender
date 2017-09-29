@@ -103,6 +103,31 @@ vector<string > getNodes(Variant v){
   return strings;
 }
 
+int** buildArray2D(unsigned height, unsigned width){
+  int** array = 0;
+  array = new int*[height];
+
+  for(int h = 0; h < height; h++){
+    array[h] = new int[width];
+
+    for (int w = 0; w < width; w++){
+      array[h][w] = 0;
+    }
+  }
+  return array;
+
+}
+
+void printArray2D(int** a, int h, int w){
+  for(unsigned i = 0; i < h; i++){
+    for(unsigned j = 0; j < w; j++){
+      cout << a[i][j] << ' ';
+    }
+    cout << std::endl;
+  }
+  cout << std::endl;
+}
+
 vector<Node *> buildDiamondGraph(vector<string> strings){
 
   vector<Node *> subjectNodes;
@@ -198,10 +223,6 @@ struct Traceback {
   
     for(auto it = std::begin(_subjectNodes); it != std::end(_subjectNodes); ++it){
       Node * node = * it;
-      //int w = node->getSequence().length()+1;
-      //std::pair<int, int> dims = std::make_pair(h,w);
-      //dimsVec.push_back(dims);
-
       dimsVec.push_back(std::make_pair(h,node->getSequence().length()+1));
     }
     return dimsVec;
@@ -316,33 +337,22 @@ struct PileUp{
       vector<int**> matrices = tb.buildTB();
       vector<std::pair<int, int> > dims = tb.buildMatrixSizeVector();
       vector<Node *> subjectNodes = tb._subjectNodes;
-      
-      
-      
-    }
+      unsigned c = 0;
 
-    /*int sumMatrix[h][w];
-    memset(sumMatrix, 0, sizeof sumMatrix);
-
-    for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
-      int** tb = *it;
-      for(unsigned i = 0; i < h; i++){
-	for(unsigned j = 0; j < w; j++) {
-	  sumMatrix[i][j] += tb[i][j];
+      //iterate through dimensions vector to build up empty 2Ds
+      for(auto it = std::begin(dims); it != std::end(dims); ++it){
+	std::pair<int, int> dim = *it;
+	int** m = buildArray2D(dim.first+1, dim.second+1);
+	sumMatrix.push_back(m);
+	for (unsigned i = 0; i < dim.first; i++){
+	  for(unsigned j = 0; j < dim.second; j++){
+	    sumMatrix[c][i][j] += matrices[c][i][j];
+	  }
 	}
-      }
-    } // end of auto
-
-    std::cout << "---------SumMatrix----------\n";
-    for (int i = 0; i < h; i++){
-      for(int j = 0; j < w; j++){
-	std::cout << sumMatrix[i][j] << ' ';
-      }
-      std::cout << std::endl;
-    }
-    std::cout << "---------SumMatrix----------\n";
-    */
-
+	printArray2D(sumMatrix[c], dim.first, dim.second);
+	c++;
+      } // end of dims loop
+    } // end of traceback loop;
     return sumMatrix;
   }
 };
