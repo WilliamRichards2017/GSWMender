@@ -340,12 +340,12 @@ GraphAlignment::GraphAlignment(
 	  y = i;
 	  x = j;
 	  maxV = MVM[i][j];
-	  cout << "max value is: " << maxV << std::endl;
+	  //cout << "max value is: " << maxV << std::endl;
 	}
       }
     }
     
-    cout << "max value coord are: " << x << ", " << y << std::endl;
+    //cout << "max value coord are: " << x << ", " << y << std::endl;
     //cout << "max value is " << maxV << std::endl;
     int width = w;
     int height = h;
@@ -371,11 +371,11 @@ GraphAlignment::GraphAlignment(
 
     for (int i = 0; i < l2+1; i++){
       for(int j = 0; j < l1+1; j++){
-	std::cout << TBM[i][j] << ' ';
+	//std::cout << TBM[i][j] << ' ';
       }
-      std::cout << std::endl;
+      //std::cout << std::endl;
     }
-    std::cout << std::endl;
+    // std::cout << std::endl;
     
 
     // register score and trace-back with the node

@@ -87,6 +87,35 @@ struct Variant{
 
 };
 
+
+struct Variants{
+  vector<string> refs;
+  vector<std::pair<string, string> > svs;
+  vector<int> ints;
+
+  Variants(vector<string> r, vector<std::pair<string, string> > s, vector<int> i) : refs(r), svs(s), ints(i) { }
+
+
+  vector<Variant> buildVariants(){
+    cout << "\ninitialized\n";
+
+    vector<Variant> variants;
+    
+    for(unsigned u = 0; u < refs.size(); u++){
+      //Variant v = {refs.back(), svs.back(), ints.back()};
+      //cout << "\n" << u<< std::endl;
+      // variants.push_back(v);
+      //      refs.pop_back();
+      // svs.pop_back();
+      // ints.pop_back();
+      cout << "\n" << u<< std::endl;
+    }
+    return variants; 
+  }
+};
+
+
+
 vector<string > getNodes(Variant v){
   vector<string> strings;
   string s1 = v.ref.substr(0, v.pos);
@@ -248,19 +277,20 @@ struct Traceback {
 
       vector< vector< vector<int> > > S = GS[node];
 
-      for (int i1=1; i1<=l1; i1++) {
-        for (int i2=1; i2<=l2; i2++) {
+      for (int i1=0; i1<=l1; i1++) {
+        for (int i2=0; i2<=l2; i2++) {
           MVM[i2][i1] = max(max(S[i1][i2][1],S[i1][i2][2]),S[i1][i2][0]);
         }
       }
 
       std::pair<int, int> coords = getMaxCoords(MVM, l2, l1);
+      //printArray2D(MVM, l2+1, l1+1);
       int x = coords.first;
       int y = coords.second;
       
       cout << "coords are: " << x << ", " << y << std::endl; 
       //start at max value coords
-      while(x > 0 && y > 0){
+      while(x > -1 && y > -1){
 	TBM[y][x] = 1;
 	
 	//Move up 
@@ -789,15 +819,27 @@ int main (int argc, char *argv[]) {
 
   string query1 = "ATCCAGTAATCCGGGATCCAT";
   string query2 = "ATCCAGTATCCGGGATCCAT";
+  vector<string> queries;
+  queries.push_back(query1);
+  queries.push_back(query2);
 
   pair<string, string> sv1 = std::make_pair("AATCC", "A");
   pair<string, string> sv2 = std::make_pair("ATCC", "A");
+  vector<pair<string, string> > svs;
 
   int pos = 7;
+  int pos2 = 7;
+
+  vector<int> positions;
+  positions.push_back(pos);
+  positions.push_back(pos2);
+  
+  Variants vs = {queries, svs, positions};
+  vector<Variant> variants = vs.buildVariants();
 
 
   Variant v1 = {query1, sv1, pos};
-  Variant v2 = {query2, sv2, pos};
+  Variant v2 = {query2, sv2, pos2};
 
   vector<string> strings1 = getNodes(v1);
   vector<string> strings2 = getNodes(v2);
