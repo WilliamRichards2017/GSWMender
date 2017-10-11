@@ -308,13 +308,14 @@ struct Traceback {
 	}
       } // end of while
 
-      for (int i = 0; i < l2+1; i++){
+      /*for (int i = 0; i < l2+1; i++){
 	for(int j = 0; j < l1+1; j++){
 	  std::cout << TBM[i][j] << ' ';
 	}
 	std::cout << std::endl;
       }
       std::cout << std::endl;
+      */
       TBMs.push_back(TBM);
     }// end of node loop
     return TBMs;
@@ -379,6 +380,7 @@ struct PileUp{
 	    sumMatrix[c][i][j] += matrices[c][i][j];
 	  }
 	}
+	cout << "printing out node " << c << std::endl;
 	printArray2D(sumMatrix[c], dim.first, dim.second);
 	c++;
       } // end of dims loop
@@ -562,6 +564,7 @@ vector<Graph * > buildAllGraphs(vector<Variant *> variants) {
 } 
 
 Graph refit(vector<Node *> subjectNodes, GraphAlignment *ga, string query, int M, int X, int GI, int GE, bool debug){
+  ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
   cout << "optimal alignment score before refit: " << ga->getScore() << std::endl;
 
   cout << "Global Alignment:" << endl << ga->getGlobalAlignment() << endl;
@@ -617,7 +620,7 @@ int main (int argc, char *argv[]) {
   arg.description = "Subject sequence";
   arg.required = false; 
   //arg.defaultValueString = "ACGT";
-  arg.defaultValueString = "CTATTTTAGTAGTTGTTGTTA";
+  arg.defaultValueString = "ATCGAAGATCCATGT";
   arg.type = "string"; 
   arg.multi = false; 
   ArgList.push_back(arg);
@@ -819,6 +822,7 @@ int main (int argc, char *argv[]) {
 
   string query1 = "ATCCAGTAATCCGGGATCCAT";
   string query2 = "ATCCAGTATCCGGGATCCAT";
+
   vector<string> queries;
   queries.push_back(query1);
   queries.push_back(query2);
@@ -853,8 +857,9 @@ int main (int argc, char *argv[]) {
   GraphAlignment * ga;
   GraphAlignment * ga2;
   ga = new GraphAlignment(subjectNodes, query1, M, X, GI, GE, debug);
+
   ga2 = new GraphAlignment(subjectNodes2, query2, M, X, GI, GE, debug);
-  
+  //cout << "Optimal score of GSW2: " << ga2->getScore() << endl;  
 
   for (vector<Node *>::const_iterator iter = subjectNodes.begin(); iter!= subjectNodes.end(); iter++){
     //ga->printMatrix(* iter, cout);
@@ -870,20 +875,22 @@ int main (int argc, char *argv[]) {
   vector<Traceback> tracebacks;
   tracebacks.push_back(t1);
   tracebacks.push_back(t2);
-  
+
 
   PileUp p = {tracebacks};
-
   p.sumTracebacks();
-
+  
   Graph g = refit(subjectNodes, ga, query, M, X, GI, GE, debug);
   ga = g.alignment;
   subjectNodes = g.nodes;
 
   ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
-  
+
   Traceback TBAfter = {subjectNodes, ga};
   vector<int**> after = TBAfter.buildTB();
+
+  ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
+
 
   cout << "Optimal score of GSW: " << ga->getScore() << endl;
   cout << "Global Cigar:" << ga->getGlobalCigar() << endl;
