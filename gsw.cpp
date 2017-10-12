@@ -2,7 +2,7 @@
 //------------------------------------------------------------------------------
 // gsw
 // Copyright 2015 Gabor T. Marth, University of Utah
-// Modified by Will Richards
+// Modified by Will Richards 2017
 // All rights reserved.
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -168,6 +168,20 @@ GraphAlignment *updateGA(GraphAlignment *ga, vector<Node *> subjectNodes, string
 }
 
 
+int getLongestString(vector<string> strings){
+  int i = -1;
+  for(auto it = std::begin(strings); it != std::end(strings); ++it){
+    if(it->length() > i){
+      i = it->length();
+    }
+  }
+  return i;
+}
+
+std::pair<int,int> getLongestVariants(vector<std::pair<int,int> >){
+
+}
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 // Begining of GSWMender core functions
@@ -255,6 +269,7 @@ struct Traceback {
 
   // get the x,y coordinates of the maximum value in Score matrix
   pair<int, int>  getMaxCoords(vector<vector<int> > MVM, int h, int w){
+    cout << "\ninside max coords\n";
     int maxV = -1;
     int x = -1;
     int y = -1;
@@ -268,6 +283,7 @@ struct Traceback {
       }
     }
     pair<int, int> coords = std::make_pair(x,y);
+    cout << "\nleaving max coords\n";
     return coords;
   }
   //Loops through each query to produce vector containing the dimensions
@@ -283,6 +299,7 @@ struct Traceback {
   }
 
   vector<vector<vector<int> > > buildTB(){
+    cout << "\ninside TB\n";
     map<Node *, vector< vector< vector<int> > >, less<Node *> > GS = ga->getScoreMatrix();
     int l2 = ga->getQueryLength();
     vector<vector<vector<int> > > TBMs;
@@ -321,6 +338,7 @@ struct Traceback {
 	} // end of while
 	TBMs.push_back(TBM);
       }// end of node loop
+    cout << "leaving build TM\n";
     return TBMs;
   }
 };
@@ -351,6 +369,7 @@ struct PileUp{
   }
 
   vector<vector<vector<int> > > sumTracebacks() {
+    cout << "\ninside sumTracebacks\n";
     vector<vector<vector<int> > >  sumMatrix;
     vector<vector<string> > strings = getAllNodes();
     vector<vector<Node *> > nodes = buildAllGraphs(strings);
@@ -376,6 +395,7 @@ struct PileUp{
         c++;
       } // end of dims loop
     } // end of traceback loop;
+    cout << "leacing sumTracebacks\n";
     return sumMatrix;
   }
 };
@@ -682,6 +702,8 @@ int main (int argc, char *argv[]) {
   queries.push_back(query2);
   queries.push_back(query3);
 
+  //cout << "\nLongest string is: " << getLongestString(queries) << std::endl;
+
   pair<string, string> sv1 = std::make_pair("AATCC", "A");
   pair<string, string> sv2 = std::make_pair("ATCC", "A");
   pair<string, string> sv3 = std::make_pair("A", "A");
@@ -728,10 +750,11 @@ int main (int argc, char *argv[]) {
 
   PileUp p = {tracebacks};
   p.sumTracebacks();
-
+  cout << "\nprerifit check\n";
   Graph g = refit(subjectNodes, ga, query, M, X, GI, GE, debug);
   ga = g.alignment;
   subjectNodes = g.nodes;
+  cout << "is refit causing segfault??";
 
   Traceback TBAfter = {subjectNodes, ga};
   vector<vector<vector<int> > > after = TBAfter.buildTB();
