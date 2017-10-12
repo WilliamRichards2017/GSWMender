@@ -96,20 +96,16 @@ vector<string > getNodes(Variant v){
 
 //initialize a zero array of a predefined height and width
 //return zero array as a decayed pointer
-int** buildArray2D(unsigned height, unsigned width){
-  int** array = 0;
-  array = new int*[height];
-  for(int h = 0; h < height; h++){
-    array[h] = new int[width];
-    for (int w = 0; w < width; w++){
-      array[h][w] = 0;
-    }
-  }
+//using vectors so theres no need to build static arrays 
+vector<vector<int> > buildArray2D(unsigned height, unsigned width){
+  cout << "\n entering buildArray2D";
+  vector<vector<int> > array(height, std::vector<int>(width, 0));
   return array;
 }
 
+
 //Print 2D array given a known height, width, and decayed pointer
-void printArray2D(int** a, int h, int w){
+void printArray2D(vector<vector<int> > a, int h, int w){
   for(unsigned i = 0; i < h; i++){
     for(unsigned j = 0; j < w; j++){
       cout << a[i][j] << ' ';
@@ -160,8 +156,14 @@ vector<Node *> buildDiamondGraph(vector<string> strings){
   return subjectNodes;
 }
 
-GraphAlignment *updateGA(vector<Node *> subjectNodes, string query, int M, int X, int GI, int GE, bool debug){
-  GraphAlignment * ga;
+void deleteGraph(vector<Node *> nodes){
+  for(auto it = std::begin(nodes); it != std::end(nodes); ++it){
+    delete * it;
+  }
+}
+
+GraphAlignment *updateGA(GraphAlignment *ga, vector<Node *> subjectNodes, string query, int M, int X, int GI, int GE, bool debug){
+  delete ga;
   ga = new GraphAlignment(subjectNodes, query, M, X, GI, GE, debug);
   return ga;
 }
@@ -189,11 +191,11 @@ Graph pullFromSame(vector<Node *> subjectNodes, GraphAlignment *ga, string query
           break;
         }
         prevScore = ga->getScore();
-        ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
+        ga = updateGA(ga, subjectNodes, query, M, X, GI, GE, debug);
         nextScore = ga->getScore();
         if(prevScore > nextScore){
           ref->undoPull(ref, node);
-          ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
+          ga = updateGA(ga, subjectNodes, query, M, X, GI, GE, debug);
           break;
         }
       }
@@ -207,7 +209,7 @@ Graph pushToRef(vector<Node * > subjectNodes, GraphAlignment *ga, string query, 
   for(vector<Node *>::const_iterator iter = subjectNodes.begin(); iter != subjectNodes.end(); iter++){
     Node * node = * iter;
     vector<Node *> contributorNodes = node->getContributorNodes();
-    ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
+    ga = updateGA(ga, subjectNodes, query, M, X, GI, GE, debug);
     int prevScore = ga->getScore();
     int nextScore = prevScore;
     if(node->isRef()){
@@ -217,11 +219,11 @@ Graph pushToRef(vector<Node * > subjectNodes, GraphAlignment *ga, string query, 
         }
         else {break;}
 	prevScore = ga->getScore();
-        ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
+        ga = updateGA(ga, subjectNodes, query, M, X, GI, GE, debug);
         nextScore = ga->getScore();
         if(prevScore > nextScore){
           node->undoPush(contributorNodes[0], node);
-          ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
+          ga = updateGA(ga, subjectNodes, query, M, X, GI, GE, debug);
           break;
         }
       }
@@ -232,7 +234,7 @@ Graph pushToRef(vector<Node * > subjectNodes, GraphAlignment *ga, string query, 
 }
 
 Graph refit(vector<Node *> subjectNodes, GraphAlignment *ga, string query, int M, int X, int GI, int GE, bool debug){
-  ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
+  ga = updateGA(ga, subjectNodes, query, M, X, GI, GE, debug);
   cout << "optimal alignment score before refit: " << ga->getScore() << std::endl;
   cout << "Global Alignment:" << endl << ga->getGlobalAlignment() << endl;
   Graph g = pushToRef(subjectNodes, ga, query, M, X, GI, GE, debug);
@@ -253,7 +255,7 @@ struct Traceback {
   GraphAlignment * ga;
 
   // get the x,y coordinates of the maximum value in Score matrix
-  pair<int, int>  getMaxCoords(int **MVM, int h, int w){
+  pair<int, int>  getMaxCoords(vector<vector<int> > MVM, int h, int w){
     int maxV = -1;
     int x = -1;
     int y = -1;
@@ -281,15 +283,18 @@ struct Traceback {
     return dimsVec;
   }
 
-  vector<int **> buildTB(){
+  vector<vector<vector<int> > > buildTB(){
+    cout << "\n in buildTB";
     map<Node *, vector< vector< vector<int> > >, less<Node *> > GS = ga->getScoreMatrix();
     int l2 = ga->getQueryLength();
-    vector<int** > TBMs;
+    vector<vector<vector<int> > > TBMs;
     for (vector<Node *>::const_iterator iter = _subjectNodes.begin(); iter != _subjectNodes.end(); iter++) {
       Node * node = * iter;
       int l1 = node->getSequence().length();
-      int** MVM = buildArray2D(l2+1, l1+1);
-      int** TBM = buildArray2D(l2+1, l1+1);
+      cout << "\nentering buildArray";
+      vector<vector<int> > MVM = buildArray2D(l2+1,l1+1);
+      vector<vector<int> > TBM = buildArray2D(l2+1,l1+1);
+      cout << "\nexiting buildArray";
       vector< vector< vector<int> > > S = GS[node];
       for (int i1=0; i1<=l1; i1++) {
 	for (int i2=0; i2<=l2; i2++) {
@@ -304,14 +309,14 @@ struct Traceback {
       //start at max value coords
       while(x > -1 && y > -1){
 	TBM[y][x] = 1;
-	//Move up
-	if(MVM[y-1][x] > MVM[y-1][x-1] && MVM[y-1][x] > MVM[y][x-1]){
-	  y--;
-	}
 	//Move diagonal
-	else if(MVM[y-1][x-1] > MVM[y-1][x] && MVM[y-1][x-1] > MVM[y][x-1]){
+	if(MVM[y-1][x-1] > MVM[y-1][x] && MVM[y-1][x-1] > MVM[y][x-1]){
 	  y--;
 	  x--;
+	}
+	//Move up
+	else if(MVM[y-1][x] > MVM[y-1][x-1] && MVM[y-1][x] > MVM[y][x-1]){
+	  y--;
 	}
 	//move left
 	else{
@@ -320,6 +325,7 @@ struct Traceback {
 	} // end of while
 	TBMs.push_back(TBM);
       }// end of node loop
+    cout << "\n out buildTB";
     return TBMs;
   }
 };
@@ -349,21 +355,24 @@ struct PileUp{
     return allGraphs;
   }
 
-  vector <int**> sumTracebacks() {
-    vector<int**>  sumMatrix;
+  vector<vector<vector<int> > > sumTracebacks() {
+    cout << "\n in sumTracebacks";
+    vector<vector<vector<int> > >  sumMatrix;
     vector<vector<string> > strings = getAllNodes();
     vector<vector<Node *> > nodes = buildAllGraphs(strings);
     int count = 0;
     for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
       Traceback tb = *it;
-      vector<int**> matrices = tb.buildTB();
+      cout << "\n entereing buildTB";
+      vector<vector<vector<int> > > matrices = tb.buildTB();
+      cout << "\n exiting buildTB";
       vector<std::pair<int, int> > dims = tb.buildMatrixSizeVector();
       vector<Node *> subjectNodes = tb._subjectNodes;
       unsigned c = 0;
       //iterate through dimensions vector to build up empty 2Ds
       for(auto it = std::begin(dims); it != std::end(dims); ++it){
 	std::pair<int, int> dim = *it;
-        int** m = buildArray2D(dim.first+1, dim.second+1);
+        vector<vector<int> > m = buildArray2D(dim.first+1, dim.second+1);
         sumMatrix.push_back(m);
         for (unsigned i = 0; i < dim.first; i++){
           for(unsigned j = 0; j < dim.second; j++){
@@ -375,6 +384,7 @@ struct PileUp{
         c++;
       } // end of dims loop
     } // end of traceback loop;
+    cout << "\n out sum matrix";
     return sumMatrix;
   }
 };
@@ -674,43 +684,56 @@ int main (int argc, char *argv[]) {
   //----------------------------------------------------------------------------
   string query1 = "ATCCAGTAATCCGGGATCCAT";
   string query2 = "ATCCAGTATCCGGGATCCAT";
+  string query3 = "TATCCAGTATCCGGGTT";
 
   vector<string> queries;
   queries.push_back(query1);
   queries.push_back(query2);
+  queries.push_back(query3);
 
   pair<string, string> sv1 = std::make_pair("AATCC", "A");
   pair<string, string> sv2 = std::make_pair("ATCC", "A");
-  vector<pair<string, string> > svs;
+  pair<string, string> sv3 = std::make_pair("A", "A");
+
 
   int pos = 7;
   int pos2 = 7;
+  int pos3 = 8;
 
   vector<int> positions;
   positions.push_back(pos);
   positions.push_back(pos2);
+  positions.push_back(pos3);
 
+  vector<pair<string, string> > svs;
   Variant v1 = {query1, sv1, pos};
   Variant v2 = {query2, sv2, pos2};
+  Variant v3 = {query3, sv3, pos3};
 
   vector<string> strings1 = getNodes(v1);
   vector<string> strings2 = getNodes(v2);
+  vector<string> strings3 = getNodes(v3);
 
   vector<Node *> subjectNodes = buildDiamondGraph(strings1);
   vector<Node *> subjectNodes2 = buildDiamondGraph(strings2);
+  vector<Node *> subjectNodes3 = buildDiamondGraph(strings3);
 
   GraphAlignment * ga;
   GraphAlignment * ga2;
-  ga = new GraphAlignment(subjectNodes, query1, M, X, GI, GE, debug);
+  GraphAlignment * ga3;
 
+  ga = new GraphAlignment(subjectNodes, query1, M, X, GI, GE, debug);
   ga2 = new GraphAlignment(subjectNodes2, query2, M, X, GI, GE, debug);
+  ga3 = new GraphAlignment(subjectNodes3, query3, M, X, GI, GE, debug);
 
   Traceback t1 = {subjectNodes, ga};
   Traceback t2 = {subjectNodes2, ga2};
+  Traceback t3 = {subjectNodes3, ga3};
 
   vector<Traceback> tracebacks;
   tracebacks.push_back(t1);
   tracebacks.push_back(t2);
+  tracebacks.push_back(t3);
 
   PileUp p = {tracebacks};
   p.sumTracebacks();
@@ -719,12 +742,10 @@ int main (int argc, char *argv[]) {
   ga = g.alignment;
   subjectNodes = g.nodes;
 
-  ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
-
   Traceback TBAfter = {subjectNodes, ga};
-  vector<int**> after = TBAfter.buildTB();
+  vector<vector<vector<int> > > after = TBAfter.buildTB();
 
-  ga = updateGA(subjectNodes, query, M, X, GI, GE, debug);
+  ga = updateGA(ga, subjectNodes, query, M, X, GI, GE, debug);
 
   cout << "Optimal score of GSW: " << ga->getScore() << endl;
   cout << "Global Cigar:" << ga->getGlobalCigar() << endl;
