@@ -98,7 +98,6 @@ vector<string > getNodes(Variant v){
 //return zero array as a decayed pointer
 //using vectors so theres no need to build static arrays 
 vector<vector<int> > buildArray2D(unsigned height, unsigned width){
-  cout << "\n entering buildArray2D";
   vector<vector<int> > array(height, std::vector<int>(width, 0));
   return array;
 }
@@ -284,17 +283,14 @@ struct Traceback {
   }
 
   vector<vector<vector<int> > > buildTB(){
-    cout << "\n in buildTB";
     map<Node *, vector< vector< vector<int> > >, less<Node *> > GS = ga->getScoreMatrix();
     int l2 = ga->getQueryLength();
     vector<vector<vector<int> > > TBMs;
     for (vector<Node *>::const_iterator iter = _subjectNodes.begin(); iter != _subjectNodes.end(); iter++) {
       Node * node = * iter;
       int l1 = node->getSequence().length();
-      cout << "\nentering buildArray";
       vector<vector<int> > MVM = buildArray2D(l2+1,l1+1);
       vector<vector<int> > TBM = buildArray2D(l2+1,l1+1);
-      cout << "\nexiting buildArray";
       vector< vector< vector<int> > > S = GS[node];
       for (int i1=0; i1<=l1; i1++) {
 	for (int i2=0; i2<=l2; i2++) {
@@ -325,7 +321,6 @@ struct Traceback {
 	} // end of while
 	TBMs.push_back(TBM);
       }// end of node loop
-    cout << "\n out buildTB";
     return TBMs;
   }
 };
@@ -356,16 +351,13 @@ struct PileUp{
   }
 
   vector<vector<vector<int> > > sumTracebacks() {
-    cout << "\n in sumTracebacks";
     vector<vector<vector<int> > >  sumMatrix;
     vector<vector<string> > strings = getAllNodes();
     vector<vector<Node *> > nodes = buildAllGraphs(strings);
     int count = 0;
     for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
       Traceback tb = *it;
-      cout << "\n entereing buildTB";
       vector<vector<vector<int> > > matrices = tb.buildTB();
-      cout << "\n exiting buildTB";
       vector<std::pair<int, int> > dims = tb.buildMatrixSizeVector();
       vector<Node *> subjectNodes = tb._subjectNodes;
       unsigned c = 0;
@@ -384,7 +376,6 @@ struct PileUp{
         c++;
       } // end of dims loop
     } // end of traceback loop;
-    cout << "\n out sum matrix";
     return sumMatrix;
   }
 };
@@ -698,7 +689,7 @@ int main (int argc, char *argv[]) {
 
   int pos = 7;
   int pos2 = 7;
-  int pos3 = 8;
+  int pos3 = 7;
 
   vector<int> positions;
   positions.push_back(pos);
