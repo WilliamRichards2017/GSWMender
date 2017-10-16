@@ -104,15 +104,18 @@ vector<vector<int> > buildArray2D(unsigned height, unsigned width){
 
 
 //Print 2D array given a known height, width, and decayed pointer
-void printArray2D(vector<vector<int> > a, int h, int w){
-  for(unsigned i = 0; i < h; i++){
-    for(unsigned j = 0; j < w; j++){
-      cout << a[i][j] << ' ';
+void printArray2D(vector<vector<int> > vec){
+  for (int i = 0; i < vec.size(); i++){
+    for (int j = 0; j < vec[i].size(); j++){
+	  cout << vec[i][j] << " ";
+	}
+      cout << std::endl;
     }
-    cout << std::endl;
-  }
   cout << std::endl;
+
 }
+
+
 
 vector<Node *> buildDiamondGraph(vector<string> strings){
   vector<Node *> subjectNodes;
@@ -269,18 +272,19 @@ struct Traceback {
   GraphAlignment * ga;
 
   // get the x,y coordinates of the maximum value in Score matrix
-  pair<int, int>  getMaxCoords(vector<vector<int> > MVM, int h, int w){
+  pair<int, int>  getMaxCoords(vector<vector<int> > MVM){
     cout << "\ninside max coords\n";
     int maxV = -1;
     int x = -1;
     int y = -1;
-    for(int i = h; i > 0; i--){
-      for(int j = w; j > 0; j--){
-        if(MVM[i][j] > maxV){
-          y = i;
-          x = j;
-          maxV = MVM[i][j];
-        }
+
+    for (int i = 0; i < MVM.size(); i++){
+      for (int j = 0; j < MVM[i].size(); j++){
+	if(MVM[i][j] > maxV){
+	  y = i;				
+	  x = j;
+	  maxV = MVM[i][j];
+	}
       }
     }
     pair<int, int> coords = std::make_pair(x,y);
@@ -290,11 +294,11 @@ struct Traceback {
   //Loops through each query to produce vector containing the dimensions
   // of each nodes Traceback matrix
   vector<std::pair<int, int> > buildMatrixSizeVector() {
-    int h = ga->getQueryLength()+1;
+    int h = ga->getQueryLength();
     vector<std::pair<int,int> > dimsVec;
     for(auto it = std::begin(_subjectNodes); it != std::end(_subjectNodes); ++it){
       Node * node = * it;
-      dimsVec.push_back(std::make_pair(h,node->getSequence().length()+1));
+      dimsVec.push_back(std::make_pair(h+1,node->getSequence().length()+1));
     }
     return dimsVec;
   }
@@ -310,13 +314,13 @@ struct Traceback {
       vector<vector<int> > MVM = buildArray2D(l2+1,l1+1);
       vector<vector<int> > TBM = buildArray2D(l2+1,l1+1);
       vector< vector< vector<int> > > S = GS[node];
-      for (int i1=0; i1<=l1; i1++) {
-	for (int i2=0; i2<=l2; i2++) {
+      for (int i2=0; i2<=l2; i2++) {
+	for (int i1=0; i1<=l1; i1++) {
 	  MVM[i2][i1] = max(max(S[i1][i2][1],S[i1][i2][2]),S[i1][i2][0]);
 	}
       }
-      std::pair<int, int> coords = getMaxCoords(MVM, l2, l1);
-      printArray2D(MVM, l2+1, l1+1);
+      std::pair<int, int> coords = getMaxCoords(MVM);
+      printArray2D(MVM);
       int x = coords.first;
       int y = coords.second;
       cout << "coords are: " << x << ", " << y << std::endl;
@@ -324,7 +328,7 @@ struct Traceback {
       while(x > -1 && y > -1){
 	TBM[y][x] = 1;
 	//Move diagonal
-	if(x == 0 && y == 0){
+	if(x == 0 || y == 0){
 	  break;
 	}
 	else if(MVM[y-1][x-1] >= MVM[y-1][x] && MVM[y-1][x-1] >= MVM[y][x-1]){
@@ -388,15 +392,15 @@ struct PileUp{
       //iterate through dimensions vector to build up empty 2Ds
       for(auto it = std::begin(dims); it != std::end(dims); ++it){
 	std::pair<int, int> dim = *it;
-        vector<vector<int> > m = buildArray2D(dim.first+1, dim.second+1);
+        vector<vector<int> > m = buildArray2D(dim.first, dim.second);
         sumMatrix.push_back(m);
         for (unsigned i = 0; i < dim.first; i++){
           for(unsigned j = 0; j < dim.second; j++){
             sumMatrix[c][i][j] += matrices[c][i][j];
           }
         }
-        cout << "printing out node " << c << std::endl;
-        printArray2D(sumMatrix[c], dim.first, dim.second);
+        //cout << "printing out node " << c << std::endl;
+        printArray2D(sumMatrix[c]);
         c++;
       } // end of dims loop
     } // end of traceback loop;
@@ -545,7 +549,7 @@ int main (int argc, char *argv[]) {
   arg.description = "Query sequence";
   arg.required = false;
   //arg.defaultValueString = "CTATTTTAGTAGGTTGTTA";
-  arg.defaultValueString = "ATCGAAGATCCATGT";
+  arg.defaultValueString = "CCCCCCCCCCCC";
   //arg.defaultValueString = "ACGT";
   arg.type = "string";
   arg.multi = false;
@@ -711,15 +715,15 @@ int main (int argc, char *argv[]) {
   //----------------------------------------------------------------------------
   //----------------------------------------------------------------------------
 
-  string query1 = "ATCCAGTAATCCGGGATCCAT";
+  /*string query1 = "ATCCAGTAATCCGGGATCCAT";
   string query2 = "ATCCAGTATCCGGGATCCAT";
-  string query3 = "TATCCAGTATCCGGGTT"; 
+  string query3 = "TATCCAGTATCCGGGTT"; */
   
-  /*string query1 = "CCCCCCCCCCCC";
+  string query1 = "CCCCCCCCCCCC";
   string query2 = "CCCCCCCCCCCC";
   string query3 = "CCCCCCCCCCCC";
   string query4 = "CCCCACCCACCC";
-  string query5 = "CCCCACCCACCC"; */
+  string query5 = "CCCCACCCACCC"; 
 
 
 
@@ -727,46 +731,52 @@ int main (int argc, char *argv[]) {
   queries.push_back(query1);
   queries.push_back(query2);
   queries.push_back(query3);
-  //queries.push_back(query4);
-  //queries.push_back(query5);
+  queries.push_back(query4);
+  queries.push_back(query5);
 
   //cout << "\nLongest string is: " << getLongestString(queries) << std::endl;
 
-  pair<string, string> sv1 = std::make_pair("AATCC", "A");
+  /*pair<string, string> sv1 = std::make_pair("AATCC", "A");
   pair<string, string> sv2 = std::make_pair("ATCC", "A");
-  pair<string, string> sv3 = std::make_pair("A", "A");
+  pair<string, string> sv3 = std::make_pair("A", "A");*/
 
-  //std::pair<string,string> sv1 = std::make_pair("CCCCCC","CCCCCC");
-  //std::pair<string,string> sv2 = std::make_pair("CCCCCC","CCCCCC");
-  //std::pair<string,string> sv3 = std::make_pair("CCCCCC","CCCCCC");
-  //std::pair<string,string> sv4 = std::make_pair("CACCCA","CCCCCC");
-  //std::pair<string,string> sv5 = std::make_pair("CACCCA","CCCCCC");
+  std::pair<string,string> sv1 = std::make_pair("CCCCCC","CCCCCC");
+  std::pair<string,string> sv2 = std::make_pair("CCCCCC","CCCCCC");
+  std::pair<string,string> sv3 = std::make_pair("CCCCCC","CCCCCC");
+  std::pair<string,string> sv4 = std::make_pair("CACCCA","CCCCCC");
+  std::pair<string,string> sv5 = std::make_pair("CACCCA","CCCCCC");
 
-  int pos = 7;
+  int pos = 4;
 
   vector<int> positions;
   positions.push_back(pos);
   positions.push_back(pos);
   positions.push_back(pos);
-  //positions.push_back(pos);
-  //positions.push_back(pos);
+  positions.push_back(pos);
+  positions.push_back(pos);
 
 
   vector<Variant> variants;
   Variant v1 = {query1, sv1, pos};
   Variant v2 = {query2, sv2, pos};
   Variant v3 = {query3, sv3, pos};
-  //Variant v4 = {query4, sv4, pos};
-  //Variant v5 = {query5, sv5, pos};
+  Variant v4 = {query4, sv4, pos};
+  Variant v5 = {query5, sv5, pos};
 
   variants.push_back(v1);
   variants.push_back(v2);
   variants.push_back(v3);
-  //variants.push_back(v4);
-  //variants.push_back(v5);
+  variants.push_back(v4);
+  variants.push_back(v5);
 
-  vector<Node *> subjectNodes = buildDiamondGraph(getNodes(v1));
-  GraphAlignment *ga = new GraphAlignment(subjectNodes, query1, M, X, GI, GE, debug);
+
+  /*vector<string> s = getNodes(v1);
+  for(auto it = std::begin(s); it != std::end(s); ++it){
+    cout << *it << std::endl;
+    }*/
+
+  vector<Node *> subjectNodes = buildDiamondGraph(getNodes(v4));
+  GraphAlignment *ga = new GraphAlignment(subjectNodes, query4, M, X, GI, GE, debug);
 
   vector<Traceback> tracebacks = buildTracebackVector(variants);
 
@@ -775,12 +785,13 @@ int main (int argc, char *argv[]) {
 
 
   
-  Graph g = refit(subjectNodes, ga, query, M, X, GI, GE, debug);
+  /*Graph g = refit(subjectNodes, ga, query, M, X, GI, GE, debug);
   ga = g.alignment;
   subjectNodes = g.nodes;
   
   Traceback TBAfter = {subjectNodes, ga};
   vector<vector<vector<int> > > after = TBAfter.buildTB();
+  */
 
   ga = updateGA(ga, subjectNodes, query, M, X, GI, GE, debug);
 
@@ -791,11 +802,11 @@ int main (int argc, char *argv[]) {
 
   vector<Node *> matchedNodes = ga->getMatchedNodes();
   cout << "Graph node alignments:" << endl;
-  for (vector<Node *>::const_iterator iter = matchedNodes.begin(); iter != matchedNodes.end(); iter++) {
+  for (vector<Node *>::const_iterator iter = subjectNodes.begin(); iter != subjectNodes.end(); iter++) {
     Node * node = * iter;
-    string cigar = ga->getNodeCigar(node);
-    int offset = ga->getNodeOffset(node);
-    cout << "  Node=" << node->getId() << " CIGAR=" << cigar << " offset=" << offset << endl;
+    //string cigar = ga->getNodeCigar(node);
+    //int offset = ga->getNodeOffset(node);
+    //cout << "  Node=" << node->getId() << " CIGAR=" << cigar << " offset=" << offset << endl;
     ga->printMatrix(node, cout);
   }
   
