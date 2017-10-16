@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// gsw
+// Gsw
 // Copyright 2015 Gabor T. Marth, University of Utah
 // Modified by Will Richards 2017
 // All rights reserved.
@@ -257,17 +257,6 @@ Graph refit(vector<Node *> subjectNodes, GraphAlignment *ga, string query, int M
   return g;
 }
 
-vector<Traceback> buildTracebackVector(vector<Variant> variants){
-    vector<Traceback> tracebackVec;
-
-    for(auto it = std::begin(variants); it != std::end(variants); ++it){
-      vector<Node *> subjectNodes = buildDiamondGraph(*it);
-      GraphAlignment * ga = new GraphAlignment(subjectNodes, it->ref, 2, -2, -3, -2, False);
-      Traceback t = {subjectNodes, ga};
-      tracebackVec.push_back(t);
-    }
-    return tracebackVec;
-  }
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -327,7 +316,7 @@ struct Traceback {
 	}
       }
       std::pair<int, int> coords = getMaxCoords(MVM, l2, l1);
-      //printArray2D(MVM, l2+1, l1+1);
+      printArray2D(MVM, l2+1, l1+1);
       int x = coords.first;
       int y = coords.second;
       cout << "coords are: " << x << ", " << y << std::endl;
@@ -338,7 +327,7 @@ struct Traceback {
 	if(x == 0 && y == 0){
 	  break;
 	}
-	if(MVM[y-1][x-1] > MVM[y-1][x] && MVM[y-1][x-1] > MVM[y][x-1]){
+	else if(MVM[y-1][x-1] >= MVM[y-1][x] && MVM[y-1][x-1] >= MVM[y][x-1]){
 	  y--;
 	  x--;
 	}
@@ -352,6 +341,7 @@ struct Traceback {
 	}
 	} // end of while
 	TBMs.push_back(TBM);
+	cout << "~~~~~~~~~MVM~~~~~~~~~~~\n";
       }// end of node loop
     cout << "leaving build TM\n";
     return TBMs;
@@ -414,6 +404,18 @@ struct PileUp{
     return sumMatrix;
   }
 };
+
+vector<Traceback> buildTracebackVector(vector<Variant> variants){
+  vector<Traceback> tracebackVec;
+
+  for(auto it = std::begin(variants); it != std::end(variants); ++it){
+    vector<Node *> subjectNodes = buildDiamondGraph(getNodes(*it));
+    GraphAlignment * ga = new GraphAlignment(subjectNodes, it->ref, 2, -2, -3, -2, &pause);
+    Traceback t = {subjectNodes, ga};
+    tracebackVec.push_back(t);
+  }
+  return tracebackVec;
+}
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -709,15 +711,15 @@ int main (int argc, char *argv[]) {
   //----------------------------------------------------------------------------
   //----------------------------------------------------------------------------
 
-  /*string query1 = "ATCCAGTAATCCGGGATCCAT";
+  string query1 = "ATCCAGTAATCCGGGATCCAT";
   string query2 = "ATCCAGTATCCGGGATCCAT";
-  string query3 = "TATCCAGTATCCGGGTT"; */
+  string query3 = "TATCCAGTATCCGGGTT"; 
   
-  string query1 = "CCCCCCCCCCCC";
-  string query2= "CCCCCCCCCCCC";
-  string query3= "CCCCCCCCCCCC";
+  /*string query1 = "CCCCCCCCCCCC";
+  string query2 = "CCCCCCCCCCCC";
+  string query3 = "CCCCCCCCCCCC";
   string query4 = "CCCCACCCACCC";
-  string query5= "CCCCACCCACCC";
+  string query5 = "CCCCACCCACCC"; */
 
 
 
@@ -725,97 +727,65 @@ int main (int argc, char *argv[]) {
   queries.push_back(query1);
   queries.push_back(query2);
   queries.push_back(query3);
-  queries.push_back(query4);
-  queries.push_back(query5);
+  //queries.push_back(query4);
+  //queries.push_back(query5);
 
   //cout << "\nLongest string is: " << getLongestString(queries) << std::endl;
 
-  /* pair<string, string> sv1 = std::make_pair("AATCC", "A");
+  pair<string, string> sv1 = std::make_pair("AATCC", "A");
   pair<string, string> sv2 = std::make_pair("ATCC", "A");
-  pair<string, string> sv3 = std::make_pair("A", "A");*/
+  pair<string, string> sv3 = std::make_pair("A", "A");
 
-  std::pair<string,string> sv1 = std::make_pair("C","A");
-  std::pair<string,string> sv2 = std::make_pair("C","A");
-  std::pair<string,string> sv3 = std::make_pair("C","A");
-  std::pair<string,string> sv4 = std::make_pair("C","C");
-  std::pair<string,string> sv5 = std::make_pair("C","C");
+  //std::pair<string,string> sv1 = std::make_pair("CCCCCC","CCCCCC");
+  //std::pair<string,string> sv2 = std::make_pair("CCCCCC","CCCCCC");
+  //std::pair<string,string> sv3 = std::make_pair("CCCCCC","CCCCCC");
+  //std::pair<string,string> sv4 = std::make_pair("CACCCA","CCCCCC");
+  //std::pair<string,string> sv5 = std::make_pair("CACCCA","CCCCCC");
 
-  int pos = 4;
+  int pos = 7;
 
   vector<int> positions;
   positions.push_back(pos);
   positions.push_back(pos);
   positions.push_back(pos);
-  positions.push_back(pos);
-  positions.push_back(pos);
+  //positions.push_back(pos);
+  //positions.push_back(pos);
 
 
   vector<Variant> variants;
   Variant v1 = {query1, sv1, pos};
   Variant v2 = {query2, sv2, pos};
   Variant v3 = {query3, sv3, pos};
-  Variant v4 = {query4, sv4, pos};
-  Variant v5 = {query5, sv5, pos};
+  //Variant v4 = {query4, sv4, pos};
+  //Variant v5 = {query5, sv5, pos};
 
   variants.push_back(v1);
   variants.push_back(v2);
   variants.push_back(v3);
-  variants.push_back(v4);
-  variants.push_back(v5);
+  //variants.push_back(v4);
+  //variants.push_back(v5);
 
+  vector<Node *> subjectNodes = buildDiamondGraph(getNodes(v1));
+  GraphAlignment *ga = new GraphAlignment(subjectNodes, query1, M, X, GI, GE, debug);
 
-  vector<string> strings1 = getNodes(v1);
-  vector<string> strings2 = getNodes(v2);
-  vector<string> strings3 = getNodes(v3);
-  vector<string> strings4 = getNodes(v4);
-  vector<string> strings5 = getNodes(v5);
-
-  vector<Node *> subjectNodes = buildDiamondGraph(strings1);
-  vector<Node *> subjectNodes2 = buildDiamondGraph(strings2);
-  vector<Node *> subjectNodes3 = buildDiamondGraph(strings3);
-  vector<Node *> subjectNodes4 = buildDiamondGraph(strings4);
-  vector<Node *> subjectNodes5 = buildDiamondGraph(strings5);
-
-  GraphAlignment * ga;
-  GraphAlignment * ga2;
-  GraphAlignment * ga3;
-  GraphAlignment * ga4;
-  GraphAlignment * ga5;
-
-  ga = new GraphAlignment(subjectNodes, query1, M, X, GI, GE, debug);
-  ga2 = new GraphAlignment(subjectNodes2, query2, M, X, GI, GE, debug);
-  ga3 = new GraphAlignment(subjectNodes3, query3, M, X, GI, GE, debug);
-  ga4 = new GraphAlignment(subjectNodes4, query4, M, X, GI, GE, debug);
-  ga5 = new GraphAlignment(subjectNodes5, query5, M, X, GI, GE, debug);
-
-  Traceback t1 = {subjectNodes, ga};
-  Traceback t2 = {subjectNodes2, ga2};
-  Traceback t3 = {subjectNodes3, ga3};
-  Traceback t4 = {subjectNodes4, ga4};
-  Traceback t5 = {subjectNodes5, ga5};
-
-  vector<Traceback> tracebacks;
-  tracebacks.push_back(t1);
-  tracebacks.push_back(t2);
-  tracebacks.push_back(t3);
-  tracebacks.push_back(t4);
-  tracebacks.push_back(t5);
-  
+  vector<Traceback> tracebacks = buildTracebackVector(variants);
 
   PileUp p = {tracebacks};
   p.sumTracebacks();
-  cout << "\nprerifit check\n";
+
+
+  
   Graph g = refit(subjectNodes, ga, query, M, X, GI, GE, debug);
   ga = g.alignment;
   subjectNodes = g.nodes;
-  cout << "is refit causing segfault??";
-
+  
   Traceback TBAfter = {subjectNodes, ga};
   vector<vector<vector<int> > > after = TBAfter.buildTB();
 
   ga = updateGA(ga, subjectNodes, query, M, X, GI, GE, debug);
 
-  cout << "Optimal score of GSW: " << ga->getScore() << endl;
+
+   cout << "Optimal score of GSW: " << ga->getScore() << endl;
   cout << "Global Cigar:" << ga->getGlobalCigar() << endl;
   cout << "Global Alignment:" << endl << ga->getGlobalAlignment() << endl;
 
@@ -826,6 +796,7 @@ int main (int argc, char *argv[]) {
     string cigar = ga->getNodeCigar(node);
     int offset = ga->getNodeOffset(node);
     cout << "  Node=" << node->getId() << " CIGAR=" << cigar << " offset=" << offset << endl;
-    //ga->printMatrix(node, cout);
+    ga->printMatrix(node, cout);
   }
+  
 }
