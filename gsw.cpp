@@ -306,6 +306,9 @@ struct Traceback {
       while(x > -1 && y > -1){
 	TBM[y][x] = 1;
 	//Move diagonal
+	if(x == 0 && y == 0){
+	  break;
+	}
 	if(MVM[y-1][x-1] > MVM[y-1][x] && MVM[y-1][x-1] > MVM[y][x-1]){
 	  y--;
 	  x--;
