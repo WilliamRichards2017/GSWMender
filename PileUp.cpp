@@ -1,11 +1,12 @@
 #include "PileUp.h"
+#include "Traceback.h"
 
 vector<vector<int> > buildArray2D(unsigned height, unsigned width){
   vector<vector<int> > array(height, std::vector<int>(width, 0));
   return array;
 }
 
-vector<string > getNodes(Variant v){
+vector<string > PileUp::getNodes(Variant v){
   vector<string> strings;
   string s1 = v.ref.substr(0, v.pos);
   string s2 = v.sv.first;
