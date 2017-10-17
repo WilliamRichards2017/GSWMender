@@ -11,7 +11,7 @@ class PileUp{
 
  public:
   vector<Traceback> tbs_;
-  vector<Variant *> variants_;
+  vector<Variant> variants_;
   vector<Node *> subjectNodes_;
   vector<vector<vector<int> > > sumTracebacks();
  private:
@@ -19,7 +19,7 @@ class PileUp{
   vector<vector<string> > getAllNodes();
   vector<Node *>buildDiamondGraph(vector<string>);
   vector<vector<Node *> > buildAllGraphs(vector<vector<string> >);
-  void deleteGraph(vector<Node *>);
+  void deleteGraph();
 };
 
 

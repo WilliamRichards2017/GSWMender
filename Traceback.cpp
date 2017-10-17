@@ -1,15 +1,19 @@
 #include "Traceback.h"
-#include "Class-Node.h"
+
+vector<vector<int> > buildArray2D(unsigned height, unsigned width){
+  vector<vector<int> > array(height, std::vector<int>(width, 0));
+  return array;
+}
 
 // get the x,y coordinates of the maximum value in Score matrix
-pair<int, int>  getMaxCoords(){
+pair<int, int>  Traceback::getMaxCoords(){
   int maxV = -1;
   int x = -1;
   int y = -1;
 
   for (int i = 0; i < MVM_.size(); i++){
     for (int j = 0; j < MVM_[i].size(); j++){
-      if(MVM[i][j] > maxV){
+      if(MVM_[i][j] > maxV){
 	y = i;
 	x = j;
 	maxV = MVM_[i][j];
@@ -20,24 +24,22 @@ pair<int, int>  getMaxCoords(){
   return coords;
 }
 
-vector<vector<vector<int> > > buildTBMs(){
+vector<vector<vector<int> > > Traceback::buildTBMs(){
   map<Node *, vector< vector< vector<int> > >, less<Node *> > GS = ga_->getScoreMatrix();
   int l2 = ga_->getQueryLength();
   for (auto it = std::begin(subjectNodes_); it != std::end(subjectNodes_); ++it){
-    int l1 = it->getSequence().length();
+    int l1 = (*it)->getSequence().length();
     MVM_ = buildArray2D(l2+1,l1+1);
     vector<vector<int> > TBM = buildArray2D(l2+1,l1+1);
-    vector< vector< vector<int> > > S = GS[node];
+    vector< vector< vector<int> > > S = GS[*it];
     for (int i2=0; i2<=l2; i2++) {
       for (int i1=0; i1<=l1; i1++) {
 	MVM_[i2][i1] = max(max(S[i1][i2][1],S[i1][i2][2]),S[i1][i2][0]);
       }
     }
     std::pair<int, int> coords = getMaxCoords();
-    printArray2D(MVM_);
     int x = coords.first;
     int y = coords.second;
-    cout << "coords are: " << x << ", " << y << std::endl;
     //start at max value coords
     while(x > -1 && y > -1){
       TBM[y][x] = 1;

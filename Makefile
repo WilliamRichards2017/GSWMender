@@ -38,8 +38,8 @@ all: sw gsw
 sw: sw.o Class-Alignment.o Class-Node.o
 	$(CC) $(CFLAGS) sw.o Class-Alignment.o -lboost_regex -lpthread -o sw -g
 
-gsw: gsw.o Class-GraphAlignment.o Class-Node.o
-	$(CC) $(CFLAGS) gsw.o Class-Node.o Class-GraphAlignment.o -lboost_regex -lpthread -o gsw -g
+gsw: gsw.o Class-GraphAlignment.o Class-Node.o Traceback.o PileUp.o
+	$(CC) $(CFLAGS) gsw.o Class-Node.o Class-GraphAlignment.o  -lboost_regex -lpthread -o gsw -g
 
 ################################################################################
 # Compilation
@@ -60,6 +60,11 @@ Class-GraphAlignment.o: Class-GraphAlignment.cpp
 
 Class-Node.o: Class-Node.cpp
 	$(CC) $(CFLAGS) -c Class-Node.cpp -o Class-Node.o
+
+Traceback.o: Traceback.cpp
+	$(CC) $(CFLAGS) -c Traceback.cpp -o -Traceback.o
+PileUp.o: PileUp.cpp	
+	$(CC) $(CFLAGS) -c PileUp.cpp -o PileUp.o
 
 ################################################################################
 # Archival

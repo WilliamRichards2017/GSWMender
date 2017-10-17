@@ -1,5 +1,9 @@
 #include "PileUp.h"
 
+vector<vector<int> > buildArray2D(unsigned height, unsigned width){
+  vector<vector<int> > array(height, std::vector<int>(width, 0));
+  return array;
+}
 
 vector<string > getNodes(Variant v){
   vector<string> strings;
@@ -14,7 +18,7 @@ vector<string > getNodes(Variant v){
   return strings;
 }
 
-vector<vector<string> > getAllNodes(){
+vector<vector<string> > PileUp::getAllNodes(){
   vector<vector<string> > allNodes;
   for(auto it = std::begin(variants_); it != std::end(variants_); ++it){
     Variant v = *it;
@@ -24,7 +28,7 @@ vector<vector<string> > getAllNodes(){
   return allNodes;
 }
 
-vector<Node *> buildDiamondGraph(vector<string> strings){
+vector<Node *> PileUp::buildDiamondGraph(vector<string> strings){
   vector<Node * > contributors1;
   Node * node1 = new Node(
 			  "node1",
@@ -61,10 +65,9 @@ vector<Node *> buildDiamondGraph(vector<string> strings){
 			        0
 			   );
   subjectNodes_.push_back(node4);
-  return subjectNodes;
 }
 
-vector<vector<Node *> >buildAllGraphs(vector<vector<string> > allStrings){
+vector<vector<Node *> > PileUp::buildAllGraphs(vector<vector<string> > allStrings){
   vector<vector<Node *> > allGraphs;
   for(auto it = std::begin(allStrings); it != std::end(allStrings); ++it){
     vector<string> strings = *it;
@@ -74,21 +77,21 @@ vector<vector<Node *> >buildAllGraphs(vector<vector<string> > allStrings){
   return allGraphs;
 }
 	
-void deleteGraph(){
+void PileUp::deleteGraph(){
   for(auto it = std::begin(subjectNodes_); it != std::end(subjectNodes_); ++it){
     delete * it;
   }
 }
 
-vector<vector<vector<int> > > sumTracebacks() {
+vector<vector<vector<int> > > PileUp::sumTracebacks() {
   vector<vector<vector<int> > >  sumMatrix;
   vector<vector<string> > strings = getAllNodes();
   vector<vector<Node *> > nodes = buildAllGraphs(strings);
   int count = 0;
-  for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
+  for(auto it = std::begin(tbs_); it != std::end(tbs_); ++it){
     Traceback tb = *it;
-    vector<vector<vector<int> > > matrices = tb.buildTB();
-    vector<Node *> subjectNodes = tb._subjectNodes;
+    vector<vector<vector<int> > > matrices = tb.buildTBMs();
+    vector<Node *> subjectNodes = tb.subjectNodes_;
     unsigned c = 0;
     //iterate through dimensions vector to build up empty 2Ds                                                                        
     for(auto it = std::begin(matrices); it != std::end(matrices); ++it){
@@ -103,7 +106,7 @@ vector<vector<vector<int> > > sumTracebacks() {
       }
 
       //cout << "printing out node " << c << std::endl;                                                                              
-      printArray2D(sumMatrix[c]);
+      //printArray2D(sumMatrix[c]);
       c++;
     } // end of dims loop                                                                                                            
   } // end of traceback loop;                                                                                                        

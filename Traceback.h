@@ -12,9 +12,11 @@ class Traceback {
   vector<vector<int> > MVM_;
   vector<vector<vector<int> > > TBMs_;
 
+  vector<vector<vector<int> > > buildTBMs();
+
  private:
   pair<int,int> getMaxCoords();
-  void buildTBMs();
+
 
 };
 
