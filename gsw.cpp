@@ -365,7 +365,7 @@ struct PileUp{
     }
     return allNodes;
   }
-  
+
   vector<vector<Node *> >buildAllGraphs(vector<vector<string> > allStrings){
     vector<vector<Node *> > allGraphs;
     for(auto it = std::begin(allStrings); it != std::end(allStrings); ++it){
@@ -750,14 +750,11 @@ int main (int argc, char *argv[]) {
   std::pair<string,string> sv2 = std::make_pair("CCCCCC","CCCCCC");
   std::pair<string,string> sv3 = std::make_pair("CCCCCC","CCCCCC");
   std::pair<string,string> sv4 = std::make_pair("CACCCA","CCCCCC");
-  std::pair<string,string> sv5 = std::make_pair("CACCCA","CCCCCC");*/
 
   std::pair<string,string> sv1 = std::make_pair("CGATTGTTT","TGTGT");
   std::pair<string,string> sv2 = std::make_pair("CGATTGTTT", "TGT");
   std::pair<string,string> sv3 = std::make_pair("CGATTGTTT", "GTG");
   std::pair<string,string> sv4 = std::make_pair("CGATTGTTT", "GTGT");
-  //std::pair<string,string> sv5 = std::make_pair("CGATTGTTT", "TGTGTG");
-
 
   int pos = 6;
 
@@ -766,28 +763,25 @@ int main (int argc, char *argv[]) {
   positions.push_back(pos);
   positions.push_back(pos);
   positions.push_back(pos);
-  //positions.push_back(pos);
-
 
   vector<Variant> variants;
   Variant v1 = {query1, sv1, pos};
   Variant v2 = {query2, sv2, pos};
   Variant v3 = {query3, sv3, pos};
   Variant v4 = {query4, sv4, pos};
-  //Variant v5 = {query5, sv5, pos};
 
   variants.push_back(v1);
   variants.push_back(v2);
   variants.push_back(v3);
   variants.push_back(v4);
-  //variants.push_back(v5);
 
-
+  //uncomment to debug node values
   /*vector<string> s = getNodes(v1);
   for(auto it = std::begin(s); it != std::end(s); ++it){
     cout << *it << std::endl;
     }*/
 
+  //Create a graph alignment 
   vector<Node *> subjectNodes = buildDiamondGraph(getNodes(v1));
   GraphAlignment *ga = new GraphAlignment(subjectNodes, query1, M, X, GI, GE, debug);
 
@@ -823,3 +817,4 @@ int main (int argc, char *argv[]) {
   }
   
 }
+
