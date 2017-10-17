@@ -385,21 +385,21 @@ struct PileUp{
     for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
       Traceback tb = *it;
       vector<vector<vector<int> > > matrices = tb.buildTB();
-      vector<std::pair<int, int> > dims = tb.buildMatrixSizeVector();
       vector<Node *> subjectNodes = tb._subjectNodes;
       unsigned c = 0;
       cout << "built up to " << c << std::endl;
       //iterate through dimensions vector to build up empty 2Ds
-      for(auto it = std::begin(dims); it != std::end(dims); ++it){
-	std::pair<int, int> dim = *it;
-        vector<vector<int> > m = buildArray2D(dim.first, dim.second);
-        sumMatrix.push_back(m);
-	cout << "built array \n";
-        for (unsigned i = 0; i < dim.first; i++){
-          for(unsigned j = 0; j < dim.second; j++){
-            sumMatrix[c][i][j] += matrices[c][i][j];
+      for(auto it = std::begin(matrices); it != std::end(matrices); ++it){
+	vector<vector<int> > m = *it;
+        vector<vector<int> > matrix = buildArray2D(m.size(), m[0].size());
+        sumMatrix.push_back(matrix);
+	cout << "built arrayy \n";
+        for (unsigned i = 0; i < m.size(); i++){
+          for(unsigned j = 0; j < m[0].size(); j++){
+	    sumMatrix[c][i][j] += matrices[c][i][j];
           }
         }
+
         //cout << "printing out node " << c << std::endl;
         printArray2D(sumMatrix[c]);
         c++;
@@ -731,14 +731,14 @@ int main (int argc, char *argv[]) {
   string query2 = "TAAAGCTGTTGTGCT";
   string query3 = "TAAAGCGTGTGTGCT";
   string query4 = "TAAAGCGTGTTGTGCT";
-  string query5 = "TAAAGCTGTGTGTGTGCT";
+  //string query5 = "TAAAGCTGTGTGTGTGCT";
 
   vector<string> queries;
   queries.push_back(query1);
   queries.push_back(query2);
   queries.push_back(query3);
   queries.push_back(query4);
-  queries.push_back(query5);
+  //queries.push_back(query5);
 
   //cout << "\nLongest string is: " << getLongestString(queries) << std::endl;
 
@@ -756,7 +756,7 @@ int main (int argc, char *argv[]) {
   std::pair<string,string> sv2 = std::make_pair("CGATTGTTT", "TGT");
   std::pair<string,string> sv3 = std::make_pair("CGATTGTTT", "GTG");
   std::pair<string,string> sv4 = std::make_pair("CGATTGTTT", "GTGT");
-  std::pair<string,string> sv5 = std::make_pair("CGATTGTTT", "TGTGTG");
+  //std::pair<string,string> sv5 = std::make_pair("CGATTGTTT", "TGTGTG");
 
 
   int pos = 6;
@@ -766,7 +766,7 @@ int main (int argc, char *argv[]) {
   positions.push_back(pos);
   positions.push_back(pos);
   positions.push_back(pos);
-  positions.push_back(pos);
+  //positions.push_back(pos);
 
 
   vector<Variant> variants;
@@ -774,13 +774,13 @@ int main (int argc, char *argv[]) {
   Variant v2 = {query2, sv2, pos};
   Variant v3 = {query3, sv3, pos};
   Variant v4 = {query4, sv4, pos};
-  Variant v5 = {query5, sv5, pos};
+  //Variant v5 = {query5, sv5, pos};
 
   variants.push_back(v1);
   variants.push_back(v2);
   variants.push_back(v3);
   variants.push_back(v4);
-  variants.push_back(v5);
+  //variants.push_back(v5);
 
 
   /*vector<string> s = getNodes(v1);
