@@ -377,7 +377,6 @@ struct PileUp{
   }
 
   vector<vector<vector<int> > > sumTracebacks() {
-    cout << "\ninside sumTracebacks\n";
     vector<vector<vector<int> > >  sumMatrix;
     vector<vector<string> > strings = getAllNodes();
     vector<vector<Node *> > nodes = buildAllGraphs(strings);
@@ -387,7 +386,6 @@ struct PileUp{
       vector<vector<vector<int> > > matrices = tb.buildTB();
       vector<Node *> subjectNodes = tb._subjectNodes;
       unsigned c = 0;
-      cout << "built up to " << c << std::endl;
       //iterate through dimensions vector to build up empty 2Ds
       for(auto it = std::begin(matrices); it != std::end(matrices); ++it){
 	vector<vector<int> > m = *it;
