@@ -345,9 +345,8 @@ struct Traceback {
 	}
 	} // end of while
 	TBMs.push_back(TBM);
-	cout << "~~~~~~~~~MVM~~~~~~~~~~~\n";
       }// end of node loop
-    cout << "leaving build TM\n";
+    cout << "leaving TB TM\n";
     return TBMs;
   }
 };
@@ -389,11 +388,13 @@ struct PileUp{
       vector<std::pair<int, int> > dims = tb.buildMatrixSizeVector();
       vector<Node *> subjectNodes = tb._subjectNodes;
       unsigned c = 0;
+      cout << "built up to " << c << std::endl;
       //iterate through dimensions vector to build up empty 2Ds
       for(auto it = std::begin(dims); it != std::end(dims); ++it){
 	std::pair<int, int> dim = *it;
         vector<vector<int> > m = buildArray2D(dim.first, dim.second);
         sumMatrix.push_back(m);
+	cout << "built array \n";
         for (unsigned i = 0; i < dim.first; i++){
           for(unsigned j = 0; j < dim.second; j++){
             sumMatrix[c][i][j] += matrices[c][i][j];
@@ -549,7 +550,7 @@ int main (int argc, char *argv[]) {
   arg.description = "Query sequence";
   arg.required = false;
   //arg.defaultValueString = "CTATTTTAGTAGGTTGTTA";
-  arg.defaultValueString = "CCCCCCCCCCCC";
+  arg.defaultValueString = "TAAAGCCGATTGTTTTGTGCT";
   //arg.defaultValueString = "ACGT";
   arg.type = "string";
   arg.multi = false;
@@ -719,13 +720,18 @@ int main (int argc, char *argv[]) {
   string query2 = "ATCCAGTATCCGGGATCCAT";
   string query3 = "TATCCAGTATCCGGGTT"; */
   
-  string query1 = "CCCCCCCCCCCC";
+  /* string query1 = "CCCCCCCCCCCC";
   string query2 = "CCCCCCCCCCCC";
   string query3 = "CCCCCCCCCCCC";
   string query4 = "CCCCACCCACCC";
   string query5 = "CCCCACCCACCC"; 
+  */
 
-
+  string query1 = "TAAAGCTGTGTTGTGCT";
+  string query2 = "TAAAGCTGTTGTGCT";
+  string query3 = "TAAAGCGTGTGTGCT";
+  string query4 = "TAAAGCGTGTTGTGCT";
+  string query5 = "TAAAGCTGTGTGTGTGCT";
 
   vector<string> queries;
   queries.push_back(query1);
@@ -740,13 +746,20 @@ int main (int argc, char *argv[]) {
   pair<string, string> sv2 = std::make_pair("ATCC", "A");
   pair<string, string> sv3 = std::make_pair("A", "A");*/
 
-  std::pair<string,string> sv1 = std::make_pair("CCCCCC","CCCCCC");
+  /*std::pair<string,string> sv1 = std::make_pair("CCCCCC","CCCCCC");
   std::pair<string,string> sv2 = std::make_pair("CCCCCC","CCCCCC");
   std::pair<string,string> sv3 = std::make_pair("CCCCCC","CCCCCC");
   std::pair<string,string> sv4 = std::make_pair("CACCCA","CCCCCC");
-  std::pair<string,string> sv5 = std::make_pair("CACCCA","CCCCCC");
+  std::pair<string,string> sv5 = std::make_pair("CACCCA","CCCCCC");*/
 
-  int pos = 4;
+  std::pair<string,string> sv1 = std::make_pair("CGATTGTTT","TGTGT");
+  std::pair<string,string> sv2 = std::make_pair("CGATTGTTT", "TGT");
+  std::pair<string,string> sv3 = std::make_pair("CGATTGTTT", "GTG");
+  std::pair<string,string> sv4 = std::make_pair("CGATTGTTT", "GTGT");
+  std::pair<string,string> sv5 = std::make_pair("CGATTGTTT", "TGTGTG");
+
+
+  int pos = 6;
 
   vector<int> positions;
   positions.push_back(pos);
@@ -775,8 +788,8 @@ int main (int argc, char *argv[]) {
     cout << *it << std::endl;
     }*/
 
-  vector<Node *> subjectNodes = buildDiamondGraph(getNodes(v4));
-  GraphAlignment *ga = new GraphAlignment(subjectNodes, query4, M, X, GI, GE, debug);
+  vector<Node *> subjectNodes = buildDiamondGraph(getNodes(v1));
+  GraphAlignment *ga = new GraphAlignment(subjectNodes, query1, M, X, GI, GE, debug);
 
   vector<Traceback> tracebacks = buildTracebackVector(variants);
 
@@ -793,10 +806,9 @@ int main (int argc, char *argv[]) {
   vector<vector<vector<int> > > after = TBAfter.buildTB();
   */
 
-  ga = updateGA(ga, subjectNodes, query, M, X, GI, GE, debug);
+ 
 
-
-   cout << "Optimal score of GSW: " << ga->getScore() << endl;
+  cout << "Optimal score of GSW: " << ga->getScore() << endl;
   cout << "Global Cigar:" << ga->getGlobalCigar() << endl;
   cout << "Global Alignment:" << endl << ga->getGlobalAlignment() << endl;
 
