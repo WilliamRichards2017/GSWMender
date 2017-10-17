@@ -1,3 +1,8 @@
+#ifndef __GRAPHALIGNMENT_H_INCLUDED__
+#define __GRAPHALIGNMENT_H_INCLUDED__
+
+
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 // Class-GraphAlignment
@@ -160,3 +165,5 @@ public:
   map<Node *, string, less<Node *> > nodeCigarMap;
   map<Node *, int, less<Node *> > nodeOffsetMap;
 };
+
+#endif // __GRAPHALIGNMENT_H_INCLUDED__

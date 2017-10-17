@@ -1,13 +1,21 @@
+#ifndef __TRACEBACK_H_INCLUDED__
+#define __TRACEBACK_H_INCLUDED__
+
+
 #include "Class-GraphAlignment.h"
 
 class Traceback {
 
  public:
-  Traceback(
-	    int* // pointer to array
-	    );
-  
-  GraphAlignment ga;
+  vector<Node *> subjectNodes_;
+  GraphAlignment * ga_;
+  vector<vector<int> > MVM_;
+  vector<vector<vector<int> > > TBMs_;
 
-  int *build_traceback_matrix(int* arrPointer);
-}
+ private:
+  pair<int,int> getMaxCoords();
+  void buildTBMs();
+
+};
+
+#endif // __TRACEBACK_H_INCLUDED__

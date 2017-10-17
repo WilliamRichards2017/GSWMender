@@ -33,6 +33,8 @@
 
 // include classes
 #include "Class-GraphAlignment.h"
+#include "Traceback.h"
+#include "PileUp.h"
 
 // uses
 using namespace std;
@@ -43,13 +45,6 @@ using namespace TCLAP;
 // Begining of GSWMender helper functions and container structs
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-
-struct Variant{
-  string ref;
-  std::pair<string, string> sv;
-  int pos;
-
-};
 
 struct Graph{
   GraphAlignment *alignment;
@@ -263,150 +258,9 @@ Graph refit(vector<Node *> subjectNodes, GraphAlignment *ga, string query, int M
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Class like structs depending on helper functions
+// Util  helper functions
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-
-struct Traceback {
-  const vector<Node *> _subjectNodes;
-  GraphAlignment * ga;
-
-  // get the x,y coordinates of the maximum value in Score matrix
-  pair<int, int>  getMaxCoords(vector<vector<int> > MVM){
-    cout << "\ninside max coords\n";
-    int maxV = -1;
-    int x = -1;
-    int y = -1;
-
-    for (int i = 0; i < MVM.size(); i++){
-      for (int j = 0; j < MVM[i].size(); j++){
-	if(MVM[i][j] > maxV){
-	  y = i;				
-	  x = j;
-	  maxV = MVM[i][j];
-	}
-      }
-    }
-    pair<int, int> coords = std::make_pair(x,y);
-    cout << "\nleaving max coords\n";
-    return coords;
-  }
-  //Loops through each query to produce vector containing the dimensions
-  // of each nodes Traceback matrix
-  vector<std::pair<int, int> > buildMatrixSizeVector() {
-    int h = ga->getQueryLength();
-    vector<std::pair<int,int> > dimsVec;
-    for(auto it = std::begin(_subjectNodes); it != std::end(_subjectNodes); ++it){
-      Node * node = * it;
-      dimsVec.push_back(std::make_pair(h+1,node->getSequence().length()+1));
-    }
-    return dimsVec;
-  }
-
-  vector<vector<vector<int> > > buildTB(){
-    cout << "\ninside TB\n";
-    map<Node *, vector< vector< vector<int> > >, less<Node *> > GS = ga->getScoreMatrix();
-    int l2 = ga->getQueryLength();
-    vector<vector<vector<int> > > TBMs;
-    for (vector<Node *>::const_iterator iter = _subjectNodes.begin(); iter != _subjectNodes.end(); iter++) {
-      Node * node = * iter;
-      int l1 = node->getSequence().length();
-      vector<vector<int> > MVM = buildArray2D(l2+1,l1+1);
-      vector<vector<int> > TBM = buildArray2D(l2+1,l1+1);
-      vector< vector< vector<int> > > S = GS[node];
-      for (int i2=0; i2<=l2; i2++) {
-	for (int i1=0; i1<=l1; i1++) {
-	  MVM[i2][i1] = max(max(S[i1][i2][1],S[i1][i2][2]),S[i1][i2][0]);
-	}
-      }
-      std::pair<int, int> coords = getMaxCoords(MVM);
-      printArray2D(MVM);
-      int x = coords.first;
-      int y = coords.second;
-      cout << "coords are: " << x << ", " << y << std::endl;
-      //start at max value coords
-      while(x > -1 && y > -1){
-	TBM[y][x] = 1;
-	//Move diagonal
-	if(x == 0 || y == 0){
-	  break;
-	}
-	else if(MVM[y-1][x-1] >= MVM[y-1][x] && MVM[y-1][x-1] >= MVM[y][x-1]){
-	  y--;
-	  x--;
-	}
-	//Move up
-	else if(MVM[y-1][x] > MVM[y-1][x-1] && MVM[y-1][x] > MVM[y][x-1]){
-	  y--;
-	}
-	//move left
-	else{
-	  x--;
-	}
-	} // end of while
-	TBMs.push_back(TBM);
-      }// end of node loop
-    cout << "leaving TB TM\n";
-    return TBMs;
-  }
-};
-
-struct PileUp{
-  //traceback matrices
-  vector<Traceback> tbs;
-  vector<Variant> variants;
-
-  vector<vector<string> > getAllNodes(){
-    vector<vector<string> > allNodes;
-    for(auto it = std::begin(variants); it != std::end(variants); ++it){
-      Variant v = *it;
-      vector<string> nodes = getNodes(v);
-      allNodes.push_back(nodes);
-    }
-    return allNodes;
-  }
-
-  vector<vector<Node *> >buildAllGraphs(vector<vector<string> > allStrings){
-    vector<vector<Node *> > allGraphs;
-    for(auto it = std::begin(allStrings); it != std::end(allStrings); ++it){
-      vector<string> strings = *it;
-      vector<Node *> graph = buildDiamondGraph(strings);
-      allGraphs.push_back(graph);
-    }
-    return allGraphs;
-  }
-
-  vector<vector<vector<int> > > sumTracebacks() {
-    vector<vector<vector<int> > >  sumMatrix;
-    vector<vector<string> > strings = getAllNodes();
-    vector<vector<Node *> > nodes = buildAllGraphs(strings);
-    int count = 0;
-    for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
-      Traceback tb = *it;
-      vector<vector<vector<int> > > matrices = tb.buildTB();
-      vector<Node *> subjectNodes = tb._subjectNodes;
-      unsigned c = 0;
-      //iterate through dimensions vector to build up empty 2Ds
-      for(auto it = std::begin(matrices); it != std::end(matrices); ++it){
-	vector<vector<int> > m = *it;
-        vector<vector<int> > matrix = buildArray2D(m.size(), m[0].size());
-        sumMatrix.push_back(matrix);
-	cout << "built arrayy \n";
-        for (unsigned i = 0; i < m.size(); i++){
-          for(unsigned j = 0; j < m[0].size(); j++){
-	    sumMatrix[c][i][j] += matrices[c][i][j];
-          }
-        }
-
-        //cout << "printing out node " << c << std::endl;
-        printArray2D(sumMatrix[c]);
-        c++;
-      } // end of dims loop
-    } // end of traceback loop;
-    cout << "leacing sumTracebacks\n";
-    return sumMatrix;
-  }
-};
 
 vector<Traceback> buildTracebackVector(vector<Variant> variants){
   vector<Traceback> tracebackVec;
@@ -747,7 +601,7 @@ int main (int argc, char *argv[]) {
   /*std::pair<string,string> sv1 = std::make_pair("CCCCCC","CCCCCC");
   std::pair<string,string> sv2 = std::make_pair("CCCCCC","CCCCCC");
   std::pair<string,string> sv3 = std::make_pair("CCCCCC","CCCCCC");
-  std::pair<string,string> sv4 = std::make_pair("CACCCA","CCCCCC");
+  std::pair<string,string> sv4 = std::make_pair("CACCCA","CCCCCC");*/
 
   std::pair<string,string> sv1 = std::make_pair("CGATTGTTT","TGTGT");
   std::pair<string,string> sv2 = std::make_pair("CGATTGTTT", "TGT");
