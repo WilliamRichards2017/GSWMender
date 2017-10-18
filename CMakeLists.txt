@@ -24,3 +24,6 @@ target_link_libraries(PileUp Traceback ArrayUtil)
 
 add_executable(gsw gsw.cpp)
 target_link_libraries(gsw Class-Node Class-Alignment Class-GraphAlignment Traceback PileUp ArrayUtil)
+
+add_executable(tests tests.cpp)
+target_link_libraries(tests Class-Node Class-Alignment Class-GraphAlignment Traceback PileUp)

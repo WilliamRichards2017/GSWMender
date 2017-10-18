@@ -22,14 +22,11 @@ pair<int, int>  Traceback::getMaxCoords(){
 }
 
 vector<vector<vector<int> > > Traceback::buildTBMs(){
-  cout << "inside buildTBMs\n";
   map<Node *, vector< vector< vector<int> > >, less<Node *> > GS = ga_->getScoreMatrix();
   int l2 = ga_->getQueryLength();
-  cout << "got score and query length\n";
   for (auto it = std::begin(subjectNodes_); it != std::end(subjectNodes_); ++it){
     int l1 = (*it)->getSequence().length();
     MVM_ = ArrayUtil::buildArray2D(l2+1,l1+1);
-    cout << "built empty MVM\n";
     vector<vector<int> > TBM = ArrayUtil::buildArray2D(l2+1,l1+1);
     vector< vector< vector<int> > > S = GS[*it];
     for (int i2=0; i2<=l2; i2++) {
@@ -38,7 +35,6 @@ vector<vector<vector<int> > > Traceback::buildTBMs(){
       }
     }
     std::pair<int, int> coords = getMaxCoords();
-    cout << "got Max coords\n";
     int x = coords.first;
     int y = coords.second;
     //start at max value coords
@@ -61,9 +57,7 @@ vector<vector<vector<int> > > Traceback::buildTBMs(){
 	x--;
       }
     } // end of while
-    cout << "end of while loop\n";
     TBMs_.push_back(TBM);
-    cout << "pushed back TBM\n";
   }// end of node loop
   return TBMs_;
 }

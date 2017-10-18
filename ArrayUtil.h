@@ -9,7 +9,6 @@ class ArrayUtil{
  public:
   static vector<vector<int> > buildArray2D(unsigned, unsigned);
   static void printArray2D(vector<vector<int> >);
-  
 };
 
 #endif

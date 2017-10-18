@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named tests
+
+# Build rule for target.
+tests: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 tests
+.PHONY : tests
+
+# fast build rule for target.
+tests/fast:
+	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/build
+.PHONY : tests/fast
+
+#=============================================================================
 # Target rules for targets named PileUp
 
 # Build rule for target.
@@ -390,6 +403,33 @@ gsw.cpp.s:
 	$(MAKE) -f CMakeFiles/gsw.dir/build.make CMakeFiles/gsw.dir/gsw.cpp.s
 .PHONY : gsw.cpp.s
 
+tests.o: tests.cpp.o
+
+.PHONY : tests.o
+
+# target to build an object file
+tests.cpp.o:
+	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/tests.cpp.o
+.PHONY : tests.cpp.o
+
+tests.i: tests.cpp.i
+
+.PHONY : tests.i
+
+# target to preprocess a source file
+tests.cpp.i:
+	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/tests.cpp.i
+.PHONY : tests.cpp.i
+
+tests.s: tests.cpp.s
+
+.PHONY : tests.s
+
+# target to generate assembly for a file
+tests.cpp.s:
+	$(MAKE) -f CMakeFiles/tests.dir/build.make CMakeFiles/tests.dir/tests.cpp.s
+.PHONY : tests.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -398,6 +438,7 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... tests"
 	@echo "... PileUp"
 	@echo "... gsw"
 	@echo "... Traceback"
@@ -426,6 +467,9 @@ help:
 	@echo "... gsw.o"
 	@echo "... gsw.i"
 	@echo "... gsw.s"
+	@echo "... tests.o"
+	@echo "... tests.i"
+	@echo "... tests.s"
 .PHONY : help
 
 

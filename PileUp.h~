@@ -14,13 +14,13 @@ class PileUp{
   vector<Variant> variants_;
   vector<Node *> subjectNodes_;
   vector<vector<vector<int> > > sumTracebacks();
-  vector<string> getNodes(Variant v);
-  vector<Node *>buildDiamondGraph(vector<string>);
+  static vector<string> getNodes(Variant v);
+  static vector<Node *>buildDiamondGraph(vector<string>);
 
  private:
  
   vector<vector<string> > getAllNodes();
-  vector<vector<Node *> > buildAllGraphs(vector<vector<string> >);
+    vector<vector<Node *> > buildAllGraphs(vector<vector<string> >);
   void deleteGraph();
 };
 

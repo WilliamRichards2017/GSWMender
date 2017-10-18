@@ -624,7 +624,6 @@ int main (int argc, char *argv[]) {
   PileUp p = {tracebacks};
   cout << "constructed pileup\n";
   vector<vector<vector<int> > > pileup = p.sumTracebacks();
-  cout << "summed tracebacks\n";
 
 
   
