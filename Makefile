@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named PileUp
+
+# Build rule for target.
+PileUp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 PileUp
+.PHONY : PileUp
+
+# fast build rule for target.
+PileUp/fast:
+	$(MAKE) -f CMakeFiles/PileUp.dir/build.make CMakeFiles/PileUp.dir/build
+.PHONY : PileUp/fast
+
+#=============================================================================
 # Target rules for targets named gsw
 
 # Build rule for target.
@@ -176,17 +189,44 @@ Class-Alignment/fast:
 .PHONY : Class-Alignment/fast
 
 #=============================================================================
-# Target rules for targets named PileUp
+# Target rules for targets named ArrayUtil
 
 # Build rule for target.
-PileUp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 PileUp
-.PHONY : PileUp
+ArrayUtil: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ArrayUtil
+.PHONY : ArrayUtil
 
 # fast build rule for target.
-PileUp/fast:
-	$(MAKE) -f CMakeFiles/PileUp.dir/build.make CMakeFiles/PileUp.dir/build
-.PHONY : PileUp/fast
+ArrayUtil/fast:
+	$(MAKE) -f CMakeFiles/ArrayUtil.dir/build.make CMakeFiles/ArrayUtil.dir/build
+.PHONY : ArrayUtil/fast
+
+ArrayUtil.o: ArrayUtil.cpp.o
+
+.PHONY : ArrayUtil.o
+
+# target to build an object file
+ArrayUtil.cpp.o:
+	$(MAKE) -f CMakeFiles/ArrayUtil.dir/build.make CMakeFiles/ArrayUtil.dir/ArrayUtil.cpp.o
+.PHONY : ArrayUtil.cpp.o
+
+ArrayUtil.i: ArrayUtil.cpp.i
+
+.PHONY : ArrayUtil.i
+
+# target to preprocess a source file
+ArrayUtil.cpp.i:
+	$(MAKE) -f CMakeFiles/ArrayUtil.dir/build.make CMakeFiles/ArrayUtil.dir/ArrayUtil.cpp.i
+.PHONY : ArrayUtil.cpp.i
+
+ArrayUtil.s: ArrayUtil.cpp.s
+
+.PHONY : ArrayUtil.s
+
+# target to generate assembly for a file
+ArrayUtil.cpp.s:
+	$(MAKE) -f CMakeFiles/ArrayUtil.dir/build.make CMakeFiles/ArrayUtil.dir/ArrayUtil.cpp.s
+.PHONY : ArrayUtil.cpp.s
 
 Class-Alignment.o: Class-Alignment.cpp.o
 
@@ -358,12 +398,16 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... PileUp"
 	@echo "... gsw"
 	@echo "... Traceback"
 	@echo "... Class-Node"
 	@echo "... Class-GraphAlignment"
 	@echo "... Class-Alignment"
-	@echo "... PileUp"
+	@echo "... ArrayUtil"
+	@echo "... ArrayUtil.o"
+	@echo "... ArrayUtil.i"
+	@echo "... ArrayUtil.s"
 	@echo "... Class-Alignment.o"
 	@echo "... Class-Alignment.i"
 	@echo "... Class-Alignment.s"

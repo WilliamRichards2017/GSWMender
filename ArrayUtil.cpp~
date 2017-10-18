@@ -1,0 +1,17 @@
+#include ArrayUtil.h
+
+vector<vector<int> > buildArray2D(unsigned height, unsigned width){
+  vector<vector<int> > array(height, std::vector<int>(width, 0));
+  return array;
+}
+
+void printArray2D(vector<vector<int> > vec){
+  for (int i = 0; i < vec.size(); i++){
+    for (int j = 0; j < vec[i].size(); j++){
+      cout << vec[i][j] << " ";
+    }
+    cout << std::endl;
+  }
+  cout << std::endl;
+
+}

@@ -1,10 +1,6 @@
 #include "PileUp.h"
 #include "Traceback.h"
-
-vector<vector<int> > buildArray2D(unsigned height, unsigned width){
-  vector<vector<int> > array(height, std::vector<int>(width, 0));
-  return array;
-}
+#include "ArrayUtil.h"
 
 vector<string > PileUp::getNodes(Variant v){
   vector<string> strings;
@@ -20,12 +16,14 @@ vector<string > PileUp::getNodes(Variant v){
 }
 
 vector<vector<string> > PileUp::getAllNodes(){
+  cout << "inside getAllNodes\n";
   vector<vector<string> > allNodes;
   for(auto it = std::begin(variants_); it != std::end(variants_); ++it){
     Variant v = *it;
     vector<string> nodes = getNodes(v);
     allNodes.push_back(nodes);
   }
+  cout << "exiting get all nodes\n";
   return allNodes;
 }
 
@@ -69,12 +67,14 @@ vector<Node *> PileUp::buildDiamondGraph(vector<string> strings){
 }
 
 vector<vector<Node *> > PileUp::buildAllGraphs(vector<vector<string> > allStrings){
+  cout << "entering buildAllGraphs\n";
   vector<vector<Node *> > allGraphs;
   for(auto it = std::begin(allStrings); it != std::end(allStrings); ++it){
     vector<string> strings = *it;
     vector<Node *> graph = buildDiamondGraph(strings);
     allGraphs.push_back(graph);
   }
+  cout << "exiting buildAllGraphs\n";
   return allGraphs;
 }
 	
@@ -85,6 +85,7 @@ void PileUp::deleteGraph(){
 }
 
 vector<vector<vector<int> > > PileUp::sumTracebacks() {
+  cout << "inside sumTracebacks\n";
   vector<vector<vector<int> > >  sumMatrix;
   vector<vector<string> > strings = getAllNodes();
   vector<vector<Node *> > nodes = buildAllGraphs(strings);
@@ -92,12 +93,13 @@ vector<vector<vector<int> > > PileUp::sumTracebacks() {
   for(auto it = std::begin(tbs_); it != std::end(tbs_); ++it){
     Traceback tb = *it;
     vector<vector<vector<int> > > matrices = tb.buildTBMs();
+    cout << "built traceback matrices\n";
     vector<Node *> subjectNodes = tb.subjectNodes_;
     unsigned c = 0;
     //iterate through dimensions vector to build up empty 2Ds                                                                        
     for(auto it = std::begin(matrices); it != std::end(matrices); ++it){
       vector<vector<int> > m = *it;
-      vector<vector<int> > matrix = buildArray2D(m.size(), m[0].size());
+      vector<vector<int> > matrix = ArrayUtil::buildArray2D(m.size(), m[0].size());
       sumMatrix.push_back(matrix);
       cout << "built arrayy \n";
       for (unsigned i = 0; i < m.size(); i++){
@@ -107,10 +109,10 @@ vector<vector<vector<int> > > PileUp::sumTracebacks() {
       }
 
       //cout << "printing out node " << c << std::endl;                                                                              
-      //printArray2D(sumMatrix[c]);
+      ArrayUtil::printArray2D(sumMatrix[c]);
       c++;
     } // end of dims loop                                                                                                            
   } // end of traceback loop;                                                                                                        
-  cout << "leacing sumTracebacks\n";
+  cout << "exiting sumTracebacks\n";
   return sumMatrix;
 }

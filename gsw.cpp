@@ -89,30 +89,9 @@ vector<string > getNodes(Variant v){
 }
 
 
-//initialize a zero array of a predefined height and width
-//return zero array as a decayed pointer
-//using vectors so theres no need to build static arrays 
-vector<vector<int> > buildArray2D(unsigned height, unsigned width){
-  vector<vector<int> > array(height, std::vector<int>(width, 0));
-  return array;
-}
-
-
-//Print 2D array given a known height, width, and decayed pointer
-void printArray2D(vector<vector<int> > vec){
-  for (int i = 0; i < vec.size(); i++){
-    for (int j = 0; j < vec[i].size(); j++){
-	  cout << vec[i][j] << " ";
-	}
-      cout << std::endl;
-    }
-  cout << std::endl;
-
-}
-
-
 
 vector<Node *> buildDiamondGraph(vector<string> strings){
+  cout << "inside diamond graph\n";
   vector<Node *> subjectNodes;
   vector<Node * > contributors1;
   Node * node1 = new Node(
@@ -150,6 +129,7 @@ vector<Node *> buildDiamondGraph(vector<string> strings){
 			     0
 			   );
   subjectNodes.push_back(node4);
+  cout << "exiting buildDiamondGraph \n";
   return subjectNodes;
 }
 
@@ -263,6 +243,7 @@ Graph refit(vector<Node *> subjectNodes, GraphAlignment *ga, string query, int M
 //------------------------------------------------------------------------------
 
 vector<Traceback> buildTracebackVector(vector<Variant> variants){
+  cout << "inside buildTracebackVector\n";
   vector<Traceback> tracebackVec;
 
   for(auto it = std::begin(variants); it != std::end(variants); ++it){
@@ -271,6 +252,7 @@ vector<Traceback> buildTracebackVector(vector<Variant> variants){
     Traceback t = {subjectNodes, ga};
     tracebackVec.push_back(t);
   }
+  cout << "exiting buildTracebackVector\n";
   return tracebackVec;
 }
 
@@ -640,7 +622,9 @@ int main (int argc, char *argv[]) {
   vector<Traceback> tracebacks = buildTracebackVector(variants);
 
   PileUp p = {tracebacks};
-  p.sumTracebacks();
+  cout << "constructed pileup\n";
+  vector<vector<vector<int> > > pileup = p.sumTracebacks();
+  cout << "summed tracebacks\n";
 
 
   

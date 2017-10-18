@@ -1,0 +1,15 @@
+#ifndef __ARRAYUTIL_H__
+#define __ARRAYUTIL_H__
+
+#include <vector>
+
+class ArrayUtil{
+ public:
+  vector<vector<int> > buildArray2D(unsigned, unsigned);
+  void printArray2D(vector<vector<int> >);
+  
+};
+
+
+
+
