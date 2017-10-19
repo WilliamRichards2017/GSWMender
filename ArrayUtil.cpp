@@ -17,5 +17,6 @@ void ArrayUtil::printArray2D(vector<vector<int> > vec){
     cout << endl;
   }
   cout << endl;
-
 }
+
+

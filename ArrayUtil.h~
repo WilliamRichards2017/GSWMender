@@ -3,12 +3,15 @@
 
 #include <vector>
 
+using namespace std;
+
 class ArrayUtil{
  public:
-  vector<vector<int> > buildArray2D(unsigned, unsigned);
-  void printArray2D(vector<vector<int> >);
-  
+  static vector<vector<int> > buildArray2D(unsigned, unsigned);
+  static void printArray2D(vector<vector<int> >);
 };
+
+#endif
 
 
 

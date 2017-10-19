@@ -74,22 +74,27 @@ void checkPos(vector<Variant> variants){
 }
 
 void checkTracebackVectorSize(vector<vector<vector<int> > > tbs){
-  cout << tbs.size();
   assert(tbs.size()==4);
+  cout << "Passing correct TB vector length\n";
+}
+
+void testMaxValue(vector<vector<int> > tbm, int m){
+  for(int i = 0; i < tbm.size(); i++){
+    for(int j = 0; j < tbm[i].size(); j++){
+      assert(tbm[i][j] <= m && tbm[i][j] >= 0);
+    }
+  }
+  
 }
 
 void checkTBMaxValue(vector<vector<vector<int> > > tbs, vector<Variant> variants){
   int maxV = variants.size();
   int c = 0;
   for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
-    for(unsigned i = 1; i < it->size(); i++){
-      for(unsigned j = 1; j < (&it[0])->size(); j++){
-	cout << tbs[c][i][j] << "\n";
-	assert(tbs[c][i][j] <= maxV);
-      }
-    }
-    c++;
+    int z = 0;
+    testMaxValue((*it), maxV);
   }
+  cout << "passed TBM minimum and maximum bounds of values\n";
 }
 
 
