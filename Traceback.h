@@ -11,7 +11,6 @@ class Traceback {
   GraphAlignment * ga_;
   vector<vector<int> > MVM_;
   vector<vector<vector<int> > > TBMs_;
-
   vector<vector<vector<int> > > buildTBMs();
 
  private:

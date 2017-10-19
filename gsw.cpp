@@ -84,14 +84,14 @@ vector<string > getNodes(Variant v){
   strings.push_back(s4);
 
   cout << " ref path is: " << s1 + s2 + s4 << std::endl;
-  cout << "alt path is:  " << s1 + s3 + s4 << std::endl;
+  cout << "alt path is:  " << s1 + s3 + s4 << std::endl << std::endl;
   return strings;
 }
 
 
 
 vector<Node *> buildDiamondGraph(vector<string> strings){
-  cout << "inside diamond graph\n";
+
   vector<Node *> subjectNodes;
   vector<Node * > contributors1;
   Node * node1 = new Node(
@@ -129,7 +129,6 @@ vector<Node *> buildDiamondGraph(vector<string> strings){
 			     0
 			   );
   subjectNodes.push_back(node4);
-  cout << "exiting buildDiamondGraph \n";
   return subjectNodes;
 }
 
@@ -243,7 +242,6 @@ Graph refit(vector<Node *> subjectNodes, GraphAlignment *ga, string query, int M
 //------------------------------------------------------------------------------
 
 vector<Traceback> buildTracebackVector(vector<Variant> variants){
-  cout << "inside buildTracebackVector\n";
   vector<Traceback> tracebackVec;
 
   for(auto it = std::begin(variants); it != std::end(variants); ++it){
@@ -252,7 +250,6 @@ vector<Traceback> buildTracebackVector(vector<Variant> variants){
     Traceback t = {subjectNodes, ga};
     tracebackVec.push_back(t);
   }
-  cout << "exiting buildTracebackVector\n";
   return tracebackVec;
 }
 
@@ -622,7 +619,6 @@ int main (int argc, char *argv[]) {
   vector<Traceback> tracebacks = buildTracebackVector(variants);
 
   PileUp p = {tracebacks};
-  cout << "constructed pileup\n";
   vector<vector<vector<int> > > pileup = p.sumTracebacks();
 
 
@@ -637,7 +633,7 @@ int main (int argc, char *argv[]) {
 
  
 
-  cout << "Optimal score of GSW: " << ga->getScore() << endl;
+  cout << "Optimal score of GSW for first variant: " << ga->getScore() << endl;
   cout << "Global Cigar:" << ga->getGlobalCigar() << endl;
   cout << "Global Alignment:" << endl << ga->getGlobalAlignment() << endl;
 
@@ -650,6 +646,5 @@ int main (int argc, char *argv[]) {
     //cout << "  Node=" << node->getId() << " CIGAR=" << cigar << " offset=" << offset << endl;
     ga->printMatrix(node, cout);
   }
-  
 }
 

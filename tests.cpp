@@ -15,7 +15,6 @@ struct Variants{
 
 vector<Traceback> buildTracebackVector(vector<Variant> variants){
   vector<Traceback> tracebackVec;
-
   for(auto it = std::begin(variants); it != std::end(variants); ++it){
     PileUp * p = new PileUp();
     vector<Node *> subjectNodes = p->buildDiamondGraph(p->getNodes(*it));
@@ -59,7 +58,6 @@ vector<vector<vector<int> > >sumTBs(vector<Variant> variants){
   vector<Traceback> tracebacks = buildTracebackVector(variants);
   PileUp p = {tracebacks};
   return p.sumTracebacks();
-
 }
 
 void check_bounds() {
@@ -67,15 +65,17 @@ void check_bounds() {
 }
 
 void checkPos(vector<Variant> variants){
+  int n = 0;
   for(auto it = std::begin(variants); it != std::end(variants); ++it){
     assert(it->ref[it->pos-1] == it->sv.first[0]);
+    n++;
   }
-  cout << "Passed all checks in checkPos\n";
+  cout << "Passed " << n << "/" << n << " breakpoint position tests\n";
 }
 
 void checkTracebackVectorSize(vector<vector<vector<int> > > tbs){
   assert(tbs.size()==4);
-  cout << "Passing correct TB vector length\n";
+  cout << "Passed 1/1 correct TB vector length\n";
 }
 
 void testMaxValue(vector<vector<int> > tbm, int m){
@@ -94,7 +94,17 @@ void checkTBMaxValue(vector<vector<vector<int> > > tbs, vector<Variant> variants
     testMaxValue((*it), maxV);
     c++;
   }
-  cout << "passed " << c << "/" << c << " traceback value bound tests\n";
+  cout << "Passed " << c << "/" << c << " traceback value bound tests\n";
+}
+
+void printTracebacks(vector<vector<vector<int> > > tbs){
+  int z = 0;
+  cout << "\n";
+  for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
+    cout << "Print out node: " << z << std::endl;
+    ArrayUtil::printArray2D(tbs[z]);
+    z++;
+  }
 }
 
 
@@ -107,12 +117,8 @@ void runAllTests(){
   checkPos(variants);
   vector<vector<vector<int> > > tbs = sumTBs(variants);
   checkTracebackVectorSize(tbs);
-  int z = 0;
-  for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
-    ArrayUtil::printArray2D(tbs[z]);
-    z++;
-  }
   checkTBMaxValue(tbs, variants);
+  printTracebacks(tbs);
 }
 
 int main(){
