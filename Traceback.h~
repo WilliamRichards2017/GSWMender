@@ -10,7 +10,6 @@ class Traceback {
   vector<Node *> subjectNodes_;
   GraphAlignment * ga_;
   vector<vector<int> > MVM_;
-  vector<vector<vector<int> > > MVMs_;
   vector<vector<vector<int> > > TBMs_;
   vector<vector<vector<int> > > buildTBMs();
 

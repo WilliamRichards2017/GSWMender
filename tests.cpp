@@ -54,15 +54,27 @@ vector<Variant> buildAllVariants(){
   return variants;
 }
 
+
+//check that all the dimmensions of each correcsponding node in our traceback matches
+void checkDimsMatch(vector<Traceback> tracebacks) {
+  int n = 0;
+  for(auto it = std::begin(tracebacks); it != std::end(tracebacks); ++it){
+    assert(it->TBMs_.size() == it->MVMs_.size());
+    assert((&it->TBMs_)[0].size() == (&it->MVMs_)[0].size());
+    assert((&(&it->TBMs_)[0])[0].size() == (&(&it->MVMs_)[0])[0].size());
+    n++;
+  }
+  cout << "Passed " << n << "/" << n << "dimension matching check tests\n";
+}
+
 vector<vector<vector<int> > >sumTBs(vector<Variant> variants){
   vector<Traceback> tracebacks = buildTracebackVector(variants);
+  checkDimsMatch(tracebacks);
   PileUp p = {tracebacks};
   return p.sumTracebacks();
 }
 
-void check_bounds() {
 
-}
 
 void checkPos(vector<Variant> variants){
   int n = 0;
