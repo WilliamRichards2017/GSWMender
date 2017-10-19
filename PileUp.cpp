@@ -89,7 +89,6 @@ vector<vector<vector<int> > > PileUp::sumTracebacks() {
   for(auto it = std::begin(tbs_); it != std::end(tbs_); ++it){
     Traceback tb = *it;
     vector<vector<vector<int> > > matrices = tb.buildTBMs();
-    cout << "size of matrices is: " << matrices.size() << std::endl;
     vector<Node *> subjectNodes = tb.subjectNodes_;
     unsigned c = 0;
     //iterate through dimensions vector to build up empty 2Ds                                                                        
@@ -107,13 +106,11 @@ vector<vector<vector<int> > > PileUp::sumTracebacks() {
 	}
       }
 
-      cout << "printing out node " << c << std::endl;                                                                              
-      ArrayUtil::printArray2D(sumMatrix[c]);
+      //cout << "printing out node " << c << std::endl;                                                                              
+      //ArrayUtil::printArray2D(sumMatrix[c]);
       c++;
-      cout << "\n\n our new c value is: " << c << std::endl << std::endl;
     } // end of dims loop                                                                                                            
     count++;
   } // end of traceback loop;                                                                                                        
-  cout << "size of Pileup is " << sumMatrix.size() << std::endl;
   return sumMatrix;
 }

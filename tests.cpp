@@ -91,10 +91,10 @@ void checkTBMaxValue(vector<vector<vector<int> > > tbs, vector<Variant> variants
   int maxV = variants.size();
   int c = 0;
   for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
-    int z = 0;
     testMaxValue((*it), maxV);
+    c++;
   }
-  cout << "passed TBM minimum and maximum bounds of values\n";
+  cout << "passed " << c << "/" << c << " traceback value bound tests\n";
 }
 
 
