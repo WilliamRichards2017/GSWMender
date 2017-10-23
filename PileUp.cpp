@@ -143,10 +143,8 @@ vector<vector<Node *> > PileUp::buildAllGraphs(vector<vector<string> > allString
 
 
  void PileUp::buildTracebackVector(vector<Variant> variants){
-   cout << "size of variant vector is: " <<  variants.size() << std::endl;
    for(auto it = std::begin(variants); it != std::end(variants); ++it){
      vector<Node *> subjectNodes = buildDiamondGraph(getNodes(*it));
-     cout << "size of subject nodes is " << subjectNodes.size() << std::endl;
      GraphAlignment * ga = new GraphAlignment(subjectNodes, it->ref, 2, -2, -3, -2, false);
      Traceback t = {subjectNodes, ga};
      tbs_.push_back(t);
@@ -160,16 +158,14 @@ vector<vector<Node *> > PileUp::buildAllGraphs(vector<vector<string> > allString
  }
 
 vector<vector<vector<int> > > PileUp::sumTracebacks() {
-  cout << "inside sumTracebacks\n";
   vector<vector<vector<int> > >  sumMatrix;
   vector<vector<string> > strings = getAllNodes();
   vector<vector<Node *> > nodes = buildAllGraphs(strings);
   int count = 0;
   for(auto it = std::begin(tbs_); it != std::end(tbs_); ++it){
     Traceback tb = *it;
-    cout << "iterating through tracebacks\n";
     vector<vector<vector<int> > > matrices = tb.buildTBMs();
-    cout << "size of tbms is " << matrices.size();
+
     vector<Node *> subjectNodes = tb.subjectNodes_;
     unsigned c = 0;
     //iterate through dimensions vector to build up empty 2Ds                                                                        
@@ -187,8 +183,8 @@ vector<vector<vector<int> > > PileUp::sumTracebacks() {
 	}
       }
       
-      cout << "printing out node " << c << std::endl;
-      ArrayUtil::printArray2D(sumMatrix[c]);
+      //cout << "printing out node " << c << std::endl;
+      //ArrayUtil::printArray2D(sumMatrix[c]);
       c++;
     } // end of dims loop                                                                                                            
     count++;

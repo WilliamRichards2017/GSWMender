@@ -24,7 +24,6 @@ pair<int, int>  Traceback::getMaxCoords(){
 vector<vector<vector<int> > > Traceback::buildTBMs(){
   map<Node *, vector< vector< vector<int> > >, less<Node *> > GS = ga_->getScoreMatrix();
   int l2 = ga_->getQueryLength();
-  cout << "size of subject Nodes is: " << subjectNodes_.size() << std::endl;
   for (auto it = std::begin(subjectNodes_); it != std::end(subjectNodes_); ++it){
     int l1 = (*it)->getSequence().length();
     MVM_ = ArrayUtil::buildArray2D(l2+1,l1+1);

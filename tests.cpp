@@ -76,7 +76,6 @@ void testMaxValue(vector<vector<int> > tbm, int m){
       assert(tbm[i][j] <= m && tbm[i][j] >= 0);
     }
   }
-  
 }
 
 void checkTBMaxValue(vector<vector<vector<int> > > tbs, vector<Variant> variants){
@@ -107,10 +106,10 @@ void runAllTests(){
   vector<Variant> variants = buildAllVariants();
   checkPos(variants);
   PileUp *p = new PileUp(variants);
-  //vector<vector<vector<int> > > tbs = sumTBs(variants);
-  //checkTracebackVectorSize(tbs);
-  //checkTBMaxValue(tbs, variants);
-  //printTracebacks(tbs);
+  checkTracebackVectorSize(p->sumMatrix_);
+  checkTBMaxValue(p->sumMatrix_, variants);
+  checkDimsMatch(p->tbs_);
+  printTracebacks(p->sumMatrix_);
 }
 
 int main(){
