@@ -71,67 +71,6 @@ struct AlleleData {
   short qual;
 };
 
-//Generate the nodes of a diamond graph from a Variant (query, variant, position)
-vector<string > getNodes(Variant v){
-  vector<string> strings;
-  string s1 = v.ref.substr(0, v.pos);
-  string s2 = v.sv.first;
-  string s3 = v.sv.second;
-  string s4 = v.ref.substr(v.pos + v.sv.first.length(), v.ref.length());
-  strings.push_back(s1);
-  strings.push_back(s2);
-  strings.push_back(s3);
-  strings.push_back(s4);
-
-  cout << " ref path is: " << s1 + s2 + s4 << std::endl;
-  cout << "alt path is:  " << s1 + s3 + s4 << std::endl << std::endl;
-  return strings;
-}
-
-
-
-vector<Node *> buildDiamondGraph(vector<string> strings){
-
-  vector<Node *> subjectNodes;
-  vector<Node * > contributors1;
-  Node * node1 = new Node(
-			  "node1",
-			  strings[0],
-			  contributors1,
-			    0
-			  );
-  subjectNodes.push_back(node1);
-  vector<Node *> contributors2;
-  contributors2.push_back(node1);
-  Node * node2 = new Node(
-			  "node2",
-			  strings[1],
-			  contributors2,
-			    1
-			  );
-  subjectNodes.push_back(node2);
-  vector<Node *> contributors3;
-  contributors3.push_back(node1);
-  Node * node3 = new Node(
-			  "node3",
-			  strings[2],
-			  contributors3,
-			    2
-			  );
-  subjectNodes.push_back(node3);
-  vector<Node *> contributors4;
-  contributors4.push_back(node2);
-  contributors4.push_back(node3);
-  Node * node4 =  new Node(
-			   "node4",
-			   strings[3],
-			   contributors4,
-			     0
-			   );
-  subjectNodes.push_back(node4);
-  return subjectNodes;
-}
-
 void deleteGraph(vector<Node *> nodes){
   for(auto it = std::begin(nodes); it != std::end(nodes); ++it){
     delete * it;
@@ -241,17 +180,6 @@ Graph refit(vector<Node *> subjectNodes, GraphAlignment *ga, string query, int M
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-vector<Traceback> buildTracebackVector(vector<Variant> variants){
-  vector<Traceback> tracebackVec;
-
-  for(auto it = std::begin(variants); it != std::end(variants); ++it){
-    vector<Node *> subjectNodes = buildDiamondGraph(getNodes(*it));
-    GraphAlignment * ga = new GraphAlignment(subjectNodes, it->ref, 2, -2, -3, -2, &pause);
-    Traceback t = {subjectNodes, ga};
-    tracebackVec.push_back(t);
-  }
-  return tracebackVec;
-}
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -613,13 +541,16 @@ int main (int argc, char *argv[]) {
     }*/
 
   //Create a graph alignment 
-  vector<Node *> subjectNodes = buildDiamondGraph(getNodes(v1));
-  GraphAlignment *ga = new GraphAlignment(subjectNodes, query1, M, X, GI, GE, debug);
+  // vector<Node *> subjectNodes = buildDiamondGraph(getNodes(v1));
 
-  vector<Traceback> tracebacks = buildTracebackVector(variants);
+  vector<Node *> subjectNodes;
+  GraphAlignment * ga;
+  PileUp *p = new PileUp(variants);
 
-  PileUp p = {tracebacks};
-  vector<vector<vector<int> > > pileup = p.sumTracebacks();
+  //vector<Traceback> tracebacks = buildTracebackVector(variants);
+
+  //PileUp p = {tracebacks};
+  //vector<vector<vector<int> > > pileup = p.sumTracebacks();
 
 
   

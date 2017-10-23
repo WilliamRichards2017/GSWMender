@@ -34,6 +34,7 @@ vector<vector<vector<int> > > Traceback::buildTBMs(){
 	MVM_[i2][i1] = max(max(S[i1][i2][1],S[i1][i2][2]),S[i1][i2][0]);
       }
     }
+    MVMs_.push_back(MVM_);
     std::pair<int, int> coords = getMaxCoords();
     int x = coords.first;
     int y = coords.second;

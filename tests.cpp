@@ -13,17 +13,6 @@ struct Variants{
   vector<Variant> variants_;
 };
 
-vector<Traceback> buildTracebackVector(vector<Variant> variants){
-  vector<Traceback> tracebackVec;
-  for(auto it = std::begin(variants); it != std::end(variants); ++it){
-    PileUp * p = new PileUp();
-    vector<Node *> subjectNodes = p->buildDiamondGraph(p->getNodes(*it));
-    GraphAlignment * ga = new GraphAlignment::GraphAlignment(subjectNodes, it->ref, 2, -2, -3, -2, false);
-    Traceback t = {subjectNodes, ga};
-    tracebackVec.push_back(t);
-  }
-  return tracebackVec;
-}
 
 vector<Variant> buildAllVariants(){
 
@@ -66,15 +55,6 @@ void checkDimsMatch(vector<Traceback> tracebacks) {
   }
   cout << "Passed " << n << "/" << n << "dimension matching check tests\n";
 }
-
-vector<vector<vector<int> > >sumTBs(vector<Variant> variants){
-  vector<Traceback> tracebacks = buildTracebackVector(variants);
-  checkDimsMatch(tracebacks);
-  PileUp p = {tracebacks};
-  return p.sumTracebacks();
-}
-
-
 
 void checkPos(vector<Variant> variants){
   int n = 0;
@@ -124,13 +104,13 @@ void runAllTests(){
   static int D = 0;
   static int H = 1;
   static int V = 2;
-
   vector<Variant> variants = buildAllVariants();
   checkPos(variants);
-  vector<vector<vector<int> > > tbs = sumTBs(variants);
-  checkTracebackVectorSize(tbs);
-  checkTBMaxValue(tbs, variants);
-  printTracebacks(tbs);
+  PileUp *p = new PileUp(variants);
+  //vector<vector<vector<int> > > tbs = sumTBs(variants);
+  //checkTracebackVectorSize(tbs);
+  //checkTBMaxValue(tbs, variants);
+  //printTracebacks(tbs);
 }
 
 int main(){

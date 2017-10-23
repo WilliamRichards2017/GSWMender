@@ -2,6 +2,11 @@
 #include "Traceback.h"
 #include "ArrayUtil.h"
 
+
+PileUp::PileUp(vector<Variant> variants, std::pair<string,string> sv) : variants_(variants), sv_(sv){
+  tracebacks_ = buildTracebackVector(variants_);
+}
+
 vector<string> PileUp::getNodes(Variant v){
   vector<string> strings;
   string s1 = v.ref.substr(0, v.pos);
@@ -74,6 +79,16 @@ vector<vector<Node *> > PileUp::buildAllGraphs(vector<vector<string> > allString
   }
   return allGraphs;
 }
+
+vector<Traceback> buildTracebackVector(vector<Variant> variants){
+
+  for(auto it = std::begin(variants); it != std::end(variants); ++it){
+    vector<Node *> subjectNodes = buildDiamondGraph(getNodes(*it));
+    GraphAlignment * ga = new GraphAlignment(subjectNodes, it->ref, 2, -2, -3, -2, &pause);
+    Traceback t = {subjectNodes, ga};
+    tbs_.push_back(t);
+  }
+}
 	
 void PileUp::deleteGraph(){
   for(auto it = std::begin(subjectNodes_); it != std::end(subjectNodes_); ++it){
@@ -93,9 +108,13 @@ vector<vector<vector<int> > > PileUp::sumTracebacks() {
     unsigned c = 0;
     //iterate through dimensions vector to build up empty 2Ds                                                                        
     for(auto it = std::begin(matrices); it != std::end(matrices); ++it){
+
       vector<vector<int> > m = *it;
       vector<vector<int> > matrix = ArrayUtil::buildArray2D(m.size(), m[0].size());
-      sumMatrix.push_back(matrix);
+      if(count == 0){
+	sumMatrix.push_back(matrix);
+      }
+      
       for (unsigned i = 0; i < m.size(); i++){
 	for(unsigned j = 0; j < m[0].size(); j++){
 	  sumMatrix[c][i][j] += matrices[c][i][j];
@@ -106,6 +125,7 @@ vector<vector<vector<int> > > PileUp::sumTracebacks() {
       //ArrayUtil::printArray2D(sumMatrix[c]);
       c++;
     } // end of dims loop                                                                                                            
+    count++;
   } // end of traceback loop;                                                                                                        
   return sumMatrix;
 }
