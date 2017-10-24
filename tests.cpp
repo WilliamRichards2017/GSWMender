@@ -4,7 +4,6 @@
 #include "PileUp.h"
 #include "Class-GraphAlignment.h"
 #include "ArrayUtil.h"
-
 #include <vector>
 #include <string>
 #include <assert.h>
@@ -21,17 +20,14 @@ vector<Variant> buildAllVariants(){
   string query3 = "TAAAGCGTGTGTGCT";
   string query4 = "TAAAGCGTGTTGTGCT";
 
-  std::pair<string,string> sv1 = std::make_pair("CGATTGTTT","TGTGT");
-  std::pair<string,string> sv2 = std::make_pair("CGATTGTTT", "TGT");
-  std::pair<string,string> sv3 = std::make_pair("CGATTGTTT", "GTG");
-  std::pair<string,string> sv4 = std::make_pair("CGATTGTTT", "GTGT");
+  std::pair<string,string> sv = std::make_pair("CGATTGTTT","TGTGT");
 
   int pos = 6;
 
-  Variant v1 = {query1, sv1, pos};
-  Variant v2 = {query2, sv2, pos};
-  Variant v3 = {query3, sv3, pos};
-  Variant v4 = {query4, sv4, pos};
+  Variant v1 = {query1, pos};
+  Variant v2 = {query2, pos};
+  Variant v3 = {query3, pos};
+  Variant v4 = {query4, pos};
 
 
   vector<Variant> variants;
@@ -56,10 +52,10 @@ void checkDimsMatch(vector<Traceback> tracebacks) {
   cout << "Passed " << n << "/" << n << "dimension matching check tests\n";
 }
 
-void checkPos(vector<Variant> variants){
+void checkPos(vector<Variant> variants, std::pair<string,string> sv){
   int n = 0;
   for(auto it = std::begin(variants); it != std::end(variants); ++it){
-    assert(it->ref[it->pos-1] == it->sv.first[0]);
+    assert(it->ref[it->pos-1] == sv.first[0]);
     n++;
   }
   cout << "Passed " << n << "/" << n << " breakpoint position tests\n";
@@ -104,8 +100,9 @@ void runAllTests(){
   static int H = 1;
   static int V = 2;
   vector<Variant> variants = buildAllVariants();
-  checkPos(variants);
-  PileUp *p = new PileUp(variants);
+  std::pair<string,string> sv = std::make_pair("CGATTGTTT","TGTGT");
+  checkPos(variants, sv);
+  PileUp *p = new PileUp(variants, sv);
   checkTracebackVectorSize(p->sumMatrix_);
   checkTBMaxValue(p->sumMatrix_, variants);
   checkDimsMatch(p->tbs_);

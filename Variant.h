@@ -7,7 +7,6 @@ using namespace std;
 
 struct Variant{
   string ref;
-  std::pair<string, string> sv;
   int pos;
 
 };

@@ -3,7 +3,7 @@
 #include "ArrayUtil.h"
 
 
-PileUp::PileUp(vector<Variant> variants) : variants_(variants){
+PileUp::PileUp(vector<Variant> variants, std::pair<string,string> sv) : variants_(variants), sv_(sv){
   buildTracebackVector(variants_);
   sumMatrix_  = sumTracebacks();                                                       
 
@@ -12,9 +12,9 @@ PileUp::PileUp(vector<Variant> variants) : variants_(variants){
 vector<string> PileUp::getNodes(Variant v){
   vector<string> strings;
   string s1 = v.ref.substr(0, v.pos);
-  string s2 = v.sv.first;
-  string s3 = v.sv.second;
-  string s4 = v.ref.substr(v.pos + v.sv.first.length(), v.ref.length());
+  string s2 = sv_.first;
+  string s3 = sv_.second;
+  string s4 = v.ref.substr(v.pos + sv_.first.length(), v.ref.length());
   strings.push_back(s1);
   strings.push_back(s2);
   strings.push_back(s3);
@@ -81,22 +81,6 @@ vector<vector<Node *> > PileUp::buildAllGraphs(vector<vector<string> > allString
     allGraphs.push_back(graph);
   }
   return allGraphs;
- }
-
- vector<string > getNodes(Variant v){
-   vector<string> strings;
-   string s1 = v.ref.substr(0, v.pos);
-   string s2 = v.sv.first;
-   string s3 = v.sv.second;
-   string s4 = v.ref.substr(v.pos + v.sv.first.length(), v.ref.length());
-   strings.push_back(s1);
-   strings.push_back(s2);
-   strings.push_back(s3);
-   strings.push_back(s4);
-
-   cout << " ref path is: " << s1 + s2 + s4 << std::endl;
-   cout << "alt path is:  " << s1 + s3 + s4 << std::endl << std::endl;
-   return strings;
  }
 
  vector<Node *> buildDiamondGraph(vector<string> strings){

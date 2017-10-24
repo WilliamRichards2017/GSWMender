@@ -510,10 +510,7 @@ int main (int argc, char *argv[]) {
   std::pair<string,string> sv3 = std::make_pair("CCCCCC","CCCCCC");
   std::pair<string,string> sv4 = std::make_pair("CACCCA","CCCCCC");*/
 
-  std::pair<string,string> sv1 = std::make_pair("CGATTGTTT","TGTGT");
-  std::pair<string,string> sv2 = std::make_pair("CGATTGTTT", "TGT");
-  std::pair<string,string> sv3 = std::make_pair("CGATTGTTT", "GTG");
-  std::pair<string,string> sv4 = std::make_pair("CGATTGTTT", "GTGT");
+  std::pair<string,string> sv = std::make_pair("CGATTGTTT","TGTGT");
 
   int pos = 6;
 
@@ -524,10 +521,10 @@ int main (int argc, char *argv[]) {
   positions.push_back(pos);
 
   vector<Variant> variants;
-  Variant v1 = {query1, sv1, pos};
-  Variant v2 = {query2, sv2, pos};
-  Variant v3 = {query3, sv3, pos};
-  Variant v4 = {query4, sv4, pos};
+  Variant v1 = {query1, pos};
+  Variant v2 = {query2, pos};
+  Variant v3 = {query3, pos};
+  Variant v4 = {query4, pos};
 
   variants.push_back(v1);
   variants.push_back(v2);
@@ -545,7 +542,7 @@ int main (int argc, char *argv[]) {
 
   vector<Node *> subjectNodes;
   GraphAlignment * ga;
-  PileUp *p = new PileUp(variants);
+  PileUp *p = new PileUp(variants, sv);
 
   //vector<Traceback> tracebacks = buildTracebackVector(variants);
 
