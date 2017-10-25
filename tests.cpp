@@ -16,18 +16,22 @@ struct Variants{
 vector<Variant> buildAllVariants(){
 
   string query1 = "TAAAGCTGTGTTGTGCT";
-  string query2 = "TAAAGCTGTTGTGCT";
-  string query3 = "TAAAGCGTGTGTGCT";
+  string query2 = "AAAGCTGTGTTGCTGC";
+  string query3 = "TAAAGCTGTGTTGTGT";
   string query4 = "TAAAGCGTGTTGTGCT";
 
   std::pair<string,string> sv = std::make_pair("CGATTGTTT","TGTGT");
 
-  int pos = 6;
+  int pos1 = 6;
+  int pos2 = 5;
+  int pos3 = 6;
+  int pos4 = 6;
 
-  Variant v1 = {query1, pos};
-  Variant v2 = {query2, pos};
-  Variant v3 = {query3, pos};
-  Variant v4 = {query4, pos};
+
+  Variant v1 = {query1, pos1};
+  Variant v2 = {query2, pos2};
+  Variant v3 = {query3, pos3};
+  Variant v4 = {query4, pos4};
 
 
   vector<Variant> variants;
@@ -76,7 +80,7 @@ void testMaxValue(vector<vector<int> > tbm, int m){
 
 void checkTBMaxValue(vector<vector<vector<int> > > tbs, vector<Variant> variants){
   int maxV = variants.size();
-  int c = 0;
+c   int c = 0;
   for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
     testMaxValue((*it), maxV);
     c++;
