@@ -542,7 +542,8 @@ int main (int argc, char *argv[]) {
 
   vector<Node *> subjectNodes;
   GraphAlignment * ga;
-  PileUp *p = new PileUp(variants, sv);
+  Variant v;
+  PileUp *p = new PileUp(variants, sv, v);
 
   //vector<Traceback> tracebacks = buildTracebackVector(variants);
 

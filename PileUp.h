@@ -10,8 +10,9 @@ class Node;
 class PileUp{
 
  public:
-  PileUp(vector<Variant>,std::pair<string,string>);
+  PileUp(vector<Variant>,std::pair<string,string>,Variant);
   ~PileUp();
+  Variant ref_;
   std::pair<string,string> sv_;
   vector<Traceback> tbs_;
   vector<Variant> variants_;
@@ -19,10 +20,8 @@ class PileUp{
   vector<vector<vector<int> > > sumMatrix_;
   
  private:
-  vector<string> getNodes(Variant v);
+  vector<string> getNodes();
   vector<Node *> buildDiamondGraph(vector<string>);
-  vector<vector<string> > getAllNodes();
-  vector<vector<Node *> > buildAllGraphs(vector<vector<string> >);
   vector<vector<vector<int> > > sumTracebacks();
   void buildTracebackVector(vector<Variant>);
   void deleteGraph();

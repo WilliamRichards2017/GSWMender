@@ -80,7 +80,7 @@ void testMaxValue(vector<vector<int> > tbm, int m){
 
 void checkTBMaxValue(vector<vector<vector<int> > > tbs, vector<Variant> variants){
   int maxV = variants.size();
-c   int c = 0;
+  int c = 0;
   for(auto it = std::begin(tbs); it != std::end(tbs); ++it){
     testMaxValue((*it), maxV);
     c++;
@@ -106,7 +106,8 @@ void runAllTests(){
   vector<Variant> variants = buildAllVariants();
   std::pair<string,string> sv = std::make_pair("CGATTGTTT","TGTGT");
   checkPos(variants, sv);
-  PileUp *p = new PileUp(variants, sv);
+  Variant ref = {"TAAAGCGATTGTTTCT", 6};
+  PileUp *p = new PileUp(variants, sv, ref);
   checkTracebackVectorSize(p->sumMatrix_);
   checkTBMaxValue(p->sumMatrix_, variants);
   checkDimsMatch(p->tbs_);
