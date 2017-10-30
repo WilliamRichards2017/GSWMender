@@ -174,5 +174,10 @@ void PileUp::trimVariants() {
       cout << "new pos is " << it->pos << std::endl;
     }
   }
+  for(auto it = std::begin(variants_); it != std::end(variants_); ++it){
+    if(it->ref.size() > ref_.ref.size()){
+      it->ref = it->ref.substr(0, ref_.ref.size());
+    }
+  }
   return;
 }

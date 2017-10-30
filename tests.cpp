@@ -10,14 +10,14 @@
 
 vector<Variant> buildAllVariants(){
 
-  string query1 = "CTTTCTTTCTTTCCTTCCTT";
-  string query2 = "CTTTCTTTCTTTTCCTTT";
-  string query3 = "TTTCTTTCTTTCTTTTCCTTT";
+  string query1 = "AAAAACTTTCTTTCTTTCCTTCCTT";
+  string query2 = "CTTTCTTTCTTTTCCTTTGGGGGGGGGG";
+  string query3 = "TTTCTTTCTTTCTTTTCCTTTAA";
 
 
   std::pair<string,string> sv = std::make_pair("TT","TTCCT");
 
-  int pos1 = 10;
+  int pos1 = 15;
   int pos2 = 10;
   int pos3 = 13;
 
