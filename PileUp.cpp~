@@ -3,33 +3,31 @@
 #include "ArrayUtil.h"
 
 
-PileUp::PileUp(vector<Variant> variants, std::pair<string,string> sv) : variants_(variants), sv_(sv){
+PileUp::PileUp(vector<Variant> variants, std::pair<string,string> sv, Variant ref) : variants_(variants), sv_(sv), ref_(ref){
   buildTracebackVector(variants_);
   sumMatrix_  = sumTracebacks();                                                       
 
 }
 
-vector<string> PileUp::getNodes(Variant v){
+vector<string> PileUp::getNodes(){
   vector<string> strings;
-  string s1 = v.ref.substr(0, v.pos);
+  string s1 = ref_.ref.substr(0, ref_.pos);
   string s2 = sv_.first;
   string s3 = sv_.second;
-  string s4 = v.ref.substr(v.pos + sv_.first.length(), v.ref.length());
+  string s4;
+  /*  if(sv_.first.length() < sv_.second.length()){
+    s4 = ref_.ref.substr(ref_.pos + sv_.second.length(), ref_.ref.length());
+  }
+  else{
+    s4 = ref_.ref.substr(ref_.pos + sv_.first.length(), ref_.ref.length());
+  }  */
+  s4 = ref_.ref.substr(ref_.pos + sv_.first.length(), ref_.ref.length());                                                                     
+
   strings.push_back(s1);
   strings.push_back(s2);
   strings.push_back(s3);
   strings.push_back(s4);
   return strings;
-}
-
-vector<vector<string> > PileUp::getAllNodes(){
-  vector<vector<string> > allNodes;
-  for(auto it = std::begin(variants_); it != std::end(variants_); ++it){
-    Variant v = *it;
-    vector<string> nodes = getNodes(v);
-    allNodes.push_back(nodes);
-  }
-  return allNodes;
 }
 
 vector<Node *> PileUp::buildDiamondGraph(vector<string> strings){
@@ -73,84 +71,72 @@ vector<Node *> PileUp::buildDiamondGraph(vector<string> strings){
   return subjectNodes;
 }
 
-vector<vector<Node *> > PileUp::buildAllGraphs(vector<vector<string> > allStrings){
-  vector<vector<Node *> > allGraphs;
-  for(auto it = std::begin(allStrings); it != std::end(allStrings); ++it){
-    vector<string> strings = *it;
-    vector<Node *> graph = buildDiamondGraph(strings);
-    allGraphs.push_back(graph);
-  }
-  return allGraphs;
- }
-
- vector<Node *> buildDiamondGraph(vector<string> strings){
-
-   vector<Node *> subjectNodes;
-   vector<Node * > contributors1;
-   Node * node1 = new Node(
-			   "node1",
+vector<Node *> buildDiamondGraph(vector<string> strings){
+  
+  vector<Node *> subjectNodes;
+  vector<Node * > contributors1;
+  Node * node1 = new Node(
+			  "node1",
 			   strings[0],
-			   contributors1,
-			       0
+			  contributors1,
+			  0
+			  );
+  subjectNodes.push_back(node1);
+  vector<Node *> contributors2;
+  contributors2.push_back(node1);
+  Node * node2 = new Node(
+			  "node2",
+			  strings[1],
+			  contributors2,
+			  1
+			  );
+  subjectNodes.push_back(node2);
+  vector<Node *> contributors3;
+  contributors3.push_back(node1);
+  Node * node3 = new Node(
+			  "node3",
+			  strings[2],
+			  contributors3,
+			  2
 			   );
-   subjectNodes.push_back(node1);
-   vector<Node *> contributors2;
-   contributors2.push_back(node1);
-   Node * node2 = new Node(
-			   "node2",
-			   strings[1],
-			   contributors2,
-			       1
+  subjectNodes.push_back(node3);
+  vector<Node *> contributors4;
+  contributors4.push_back(node2);
+  contributors4.push_back(node3);
+  Node * node4 =  new Node(
+			   "node4",
+			   strings[3],
+			   contributors4,
+			   0
 			   );
-   subjectNodes.push_back(node2);
-   vector<Node *> contributors3;
-   contributors3.push_back(node1);
-   Node * node3 = new Node(
-			   "node3",
-			   strings[2],
-			   contributors3,
-			       2
-			   );
-   subjectNodes.push_back(node3);
-   vector<Node *> contributors4;
-   contributors4.push_back(node2);
-   contributors4.push_back(node3);
-   Node * node4 =  new Node(
-			    "node4",
-			    strings[3],
-			    contributors4,
-				 0
-			    );
-   subjectNodes.push_back(node4);
-   return subjectNodes;
+  subjectNodes.push_back(node4);
+  return subjectNodes;
+}
+
+
+void PileUp::buildTracebackVector(vector<Variant> variants){
+  for(auto it = std::begin(variants); it != std::end(variants); ++it){
+    vector<Node *> subjectNodes = buildDiamondGraph(getNodes());
+    GraphAlignment * ga = new GraphAlignment(subjectNodes, it->ref, 2, -2, -3, -2, false);
+    Traceback t = {subjectNodes, ga};
+    tbs_.push_back(t);
+  }
  }
 
-
- void PileUp::buildTracebackVector(vector<Variant> variants){
-   for(auto it = std::begin(variants); it != std::end(variants); ++it){
-     vector<Node *> subjectNodes = buildDiamondGraph(getNodes(*it));
-     GraphAlignment * ga = new GraphAlignment(subjectNodes, it->ref, 2, -2, -3, -2, false);
-     Traceback t = {subjectNodes, ga};
-     tbs_.push_back(t);
-   }
- }
-
- void PileUp::deleteGraph(){
-   for(auto it = std::begin(subjectNodes_); it != std::end(subjectNodes_); ++it){
+void PileUp::deleteGraph(){
+  for(auto it = std::begin(subjectNodes_); it != std::end(subjectNodes_); ++it){
      delete * it;
-   }
- }
+  }
+}
 
 vector<vector<vector<int> > > PileUp::sumTracebacks() {
   vector<vector<vector<int> > >  sumMatrix;
-  vector<vector<string> > strings = getAllNodes();
-  vector<vector<Node *> > nodes = buildAllGraphs(strings);
+  
+  vector<string> nodes = getNodes();
   int count = 0;
   for(auto it = std::begin(tbs_); it != std::end(tbs_); ++it){
     Traceback tb = *it;
     vector<vector<vector<int> > > matrices = tb.buildTBMs();
-
-    vector<Node *> subjectNodes = tb.subjectNodes_;
     unsigned c = 0;
     //iterate through dimensions vector to build up empty 2Ds                                                                        
     for(auto it = std::begin(matrices); it != std::end(matrices); ++it){

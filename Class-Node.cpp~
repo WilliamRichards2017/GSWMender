@@ -117,7 +117,7 @@ void Node::setSequence(string seq) {
 
 void Node::pushLast(Node *node1, Node *node2){
   string c = string(1, node1->getSequence().back());
-  node2->setSequence(c.append(node1->getSequence()));
+  node2->setSequence(c.append(node2->getSequence()));
   node1->setSequence(node1->getSequence().substr(0,node1->getSequence().length()-1));
 }
 

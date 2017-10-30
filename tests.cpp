@@ -8,37 +8,30 @@
 #include <string>
 #include <assert.h>
 
-struct Variants{
-  vector<Variant> variants_;
-};
-
-
 vector<Variant> buildAllVariants(){
 
-  string query1 = "TAAAGCTGTGTTGTGCT";
-  string query2 = "AAAGCTGTGTTGCTGC";
-  string query3 = "TAAAGCTGTGTTGTGT";
-  string query4 = "TAAAGCGTGTTGTGCT";
+  string query1 = "CTTTCTTTCTTTCCTTCCTT";
+  string query2 = "CTTTCTTTCTTTTCCTTT";
+  string query3 = "TTTCTTTCTTTCTTTTCCTTT";
 
-  std::pair<string,string> sv = std::make_pair("CGATTGTTT","TGTGT");
 
-  int pos1 = 6;
-  int pos2 = 5;
-  int pos3 = 6;
-  int pos4 = 6;
+  std::pair<string,string> sv = std::make_pair("TT","TTCCT");
 
+  int pos1 = 10;
+  int pos2 = 10;
+  int pos3 = 13;
 
   Variant v1 = {query1, pos1};
   Variant v2 = {query2, pos2};
   Variant v3 = {query3, pos3};
-  Variant v4 = {query4, pos4};
+  // Variant v4 = {query4, pos4};
 
 
   vector<Variant> variants;
   variants.push_back(v1);
   variants.push_back(v2);
   variants.push_back(v3);
-  variants.push_back(v4);
+  //variants.push_back(v4);
 
   return variants;
 }
@@ -53,7 +46,7 @@ void checkDimsMatch(vector<Traceback> tracebacks) {
     assert((&(&it->TBMs_)[0])[0].size() == (&(&it->MVMs_)[0])[0].size());
     n++;
   }
-  cout << "Passed " << n << "/" << n << "dimension matching check tests\n";
+  cout << "Passed " << n << "/" << n << " dimension matching check tests\n";
 }
 
 void checkPos(vector<Variant> variants, std::pair<string,string> sv){
@@ -88,6 +81,32 @@ void checkTBMaxValue(vector<vector<vector<int> > > tbs, vector<Variant> variants
   cout << "Passed " << c << "/" << c << " traceback value bound tests\n";
 }
 
+void checkGraphEquality(vector<Traceback> tbs){
+  assert(tbs.size() > 0);
+  if(tbs.size() == 1){
+    cout << "Passed all graph equality checks\n";
+    return;
+  }
+  else{
+    Traceback t1 = tbs.back();
+    tbs.pop_back();
+    Traceback t2 = tbs.back();
+    
+    vector<Node *> sn1 = t1.subjectNodes_;
+    vector<Node *> sn2 = t2.subjectNodes_;
+
+    assert(sn1.size() == 4);
+    assert(sn2.size() == 4);
+
+    for(unsigned i = 0; i < 4; i++){
+      assert(sn1[i]->getSequence() == sn2[i]->getSequence());
+    }
+    checkGraphEquality(tbs);
+  }
+  return;
+}
+
+
 void printTracebacks(vector<vector<vector<int> > > tbs){
   int z = 0;
   cout << "\n";
@@ -104,10 +123,11 @@ void runAllTests(){
   static int H = 1;
   static int V = 2;
   vector<Variant> variants = buildAllVariants();
-  std::pair<string,string> sv = std::make_pair("CGATTGTTT","TGTGT");
+  std::pair<string,string> sv = std::make_pair("TT","TTCCT");
   checkPos(variants, sv);
-  Variant ref = {"TAAAGCGATTGTTTCT", 6};
+  Variant ref = {"CTTTCTTTCTTTCCTTCCTT", 10};
   PileUp *p = new PileUp(variants, sv, ref);
+  checkGraphEquality(p->tbs_);
   checkTracebackVectorSize(p->sumMatrix_);
   checkTBMaxValue(p->sumMatrix_, variants);
   checkDimsMatch(p->tbs_);

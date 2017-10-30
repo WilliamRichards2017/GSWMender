@@ -23,6 +23,7 @@ class PileUp{
   vector<string> getNodes();
   vector<Node *> buildDiamondGraph(vector<string>);
   vector<vector<vector<int> > > sumTracebacks();
+  void trimVariants();
   void buildTracebackVector(vector<Variant>);
   void deleteGraph();
 };

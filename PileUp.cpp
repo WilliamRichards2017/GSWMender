@@ -4,6 +4,7 @@
 
 
 PileUp::PileUp(vector<Variant> variants, std::pair<string,string> sv, Variant ref) : variants_(variants), sv_(sv), ref_(ref){
+  trimVariants();
   buildTracebackVector(variants_);
   sumMatrix_  = sumTracebacks();                                                       
 
@@ -14,7 +15,15 @@ vector<string> PileUp::getNodes(){
   string s1 = ref_.ref.substr(0, ref_.pos);
   string s2 = sv_.first;
   string s3 = sv_.second;
-  string s4 = ref_.ref.substr(ref_.pos + sv_.first.length(), ref_.ref.length());
+  string s4;
+  /*  if(sv_.first.length() < sv_.second.length()){
+    s4 = ref_.ref.substr(ref_.pos + sv_.second.length(), ref_.ref.length());
+  }
+  else{
+    s4 = ref_.ref.substr(ref_.pos + sv_.first.length(), ref_.ref.length());
+  }  */
+  s4 = ref_.ref.substr(ref_.pos + sv_.first.length(), ref_.ref.length());                                                                     
+
   strings.push_back(s1);
   strings.push_back(s2);
   strings.push_back(s3);
@@ -107,8 +116,8 @@ vector<Node *> buildDiamondGraph(vector<string> strings){
 
 
 void PileUp::buildTracebackVector(vector<Variant> variants){
+  vector<Node *> subjectNodes = buildDiamondGraph(getNodes());
   for(auto it = std::begin(variants); it != std::end(variants); ++it){
-    vector<Node *> subjectNodes = buildDiamondGraph(getNodes());
     GraphAlignment * ga = new GraphAlignment(subjectNodes, it->ref, 2, -2, -3, -2, false);
     Traceback t = {subjectNodes, ga};
     tbs_.push_back(t);
@@ -152,4 +161,18 @@ vector<vector<vector<int> > > PileUp::sumTracebacks() {
     count++;
   } // end of traceback loop;                                                                                                        
   return sumMatrix;
+}
+
+void PileUp::trimVariants() {
+  for(auto it = std::begin(variants_); it != std::end(variants_); ++it){
+    if(it->pos > ref_.pos){
+      cout << it->ref << "\n";
+      cout << "substring coords are: " << ref_.pos-it->pos << ", " << it->ref.size() << std::endl;
+      it->ref = it->ref.substr(it->pos - ref_.pos, it->ref.size());
+      cout << it->ref << "\n";
+      it->pos = ref_.pos;
+      cout << "new pos is " << it->pos << std::endl;
+    }
+  }
+  return;
 }
