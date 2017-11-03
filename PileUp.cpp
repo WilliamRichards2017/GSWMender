@@ -2,7 +2,6 @@
 #include "Traceback.h"
 #include "ArrayUtil.h"
 
-
 PileUp::PileUp(vector<Variant> variants, std::pair<string,string> sv, Variant ref) : variants_(variants), sv_(sv), ref_(ref){
   trimVariants();
   buildTracebackVector(variants_);
@@ -72,49 +71,7 @@ vector<Node *> PileUp::buildDiamondGraph(vector<string> strings){
   return subjectNodes;
 }
 
-vector<Node *> buildDiamondGraph(vector<string> strings){
-  
-  vector<Node *> subjectNodes;
-  vector<Node * > contributors1;
-  Node * node1 = new Node(
-			  "node1",
-			   strings[0],
-			  contributors1,
-			  0
-			  );
-  subjectNodes.push_back(node1);
-  vector<Node *> contributors2;
-  contributors2.push_back(node1);
-  Node * node2 = new Node(
-			  "node2",
-			  strings[1],
-			  contributors2,
-			  1
-			  );
-  subjectNodes.push_back(node2);
-  vector<Node *> contributors3;
-  contributors3.push_back(node1);
-  Node * node3 = new Node(
-			  "node3",
-			  strings[2],
-			  contributors3,
-			  2
-			   );
-  subjectNodes.push_back(node3);
-  vector<Node *> contributors4;
-  contributors4.push_back(node2);
-  contributors4.push_back(node3);
-  Node * node4 =  new Node(
-			   "node4",
-			   strings[3],
-			   contributors4,
-			   0
-			   );
-  subjectNodes.push_back(node4);
-  return subjectNodes;
-}
-
-
+//Build a single graph, create a graph alignment and traceback matrix for each 'variant'
 void PileUp::buildTracebackVector(vector<Variant> variants){
   vector<Node *> subjectNodes = buildDiamondGraph(getNodes());
   for(auto it = std::begin(variants); it != std::end(variants); ++it){
@@ -132,7 +89,6 @@ void PileUp::deleteGraph(){
 
 vector<vector<vector<int> > > PileUp::sumTracebacks() {
   vector<vector<vector<int> > >  sumMatrix;
-  
   vector<string> nodes = getNodes();
   int count = 0;
   for(auto it = std::begin(tbs_); it != std::end(tbs_); ++it){
@@ -150,12 +106,8 @@ vector<vector<vector<int> > > PileUp::sumTracebacks() {
       for (unsigned i = 0; i < m.size(); i++){
 	for(unsigned j = 0; j < m[0].size(); j++){
 	  sumMatrix[c][i][j] += matrices[c][i][j];
-	  //cout <<  "c, i j, count = " << c << ", " << i << ", " << j << ", " << count << std::endl;
 	}
       }
-      
-      //cout << "printing out node " << c << std::endl;
-      //ArrayUtil::printArray2D(sumMatrix[c]);
       c++;
     } // end of dims loop                                                                                                            
     count++;
@@ -163,15 +115,12 @@ vector<vector<vector<int> > > PileUp::sumTracebacks() {
   return sumMatrix;
 }
 
+//ensure variants are in the same position as the reference sequence
 void PileUp::trimVariants() {
   for(auto it = std::begin(variants_); it != std::end(variants_); ++it){
     if(it->pos > ref_.pos){
-      cout << it->ref << "\n";
-      cout << "substring coords are: " << ref_.pos-it->pos << ", " << it->ref.size() << std::endl;
       it->ref = it->ref.substr(it->pos - ref_.pos, it->ref.size());
-      cout << it->ref << "\n";
       it->pos = ref_.pos;
-      cout << "new pos is " << it->pos << std::endl;
     }
   }
   for(auto it = std::begin(variants_); it != std::end(variants_); ++it){

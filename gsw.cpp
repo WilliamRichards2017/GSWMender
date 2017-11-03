@@ -94,9 +94,6 @@ int getLongestString(vector<string> strings){
   return i;
 }
 
-std::pair<int,int> getLongestVariants(vector<std::pair<int,int> >){
-
-}
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -573,7 +570,7 @@ int main (int argc, char *argv[]) {
     //string cigar = ga->getNodeCigar(node);
     //int offset = ga->getNodeOffset(node);
     //cout << "  Node=" << node->getId() << " CIGAR=" << cigar << " offset=" << offset << endl;
-    ga->printMatrix(node, cout);
+    //ga->printMatrix(node, cout);
   }
 }
 

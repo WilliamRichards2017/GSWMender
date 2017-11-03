@@ -1,7 +1,6 @@
 #include "Traceback.h"
 #include "ArrayUtil.h"
 
-
 // get the x,y coordinates of the maximum value in Score matrix
 pair<int, int>  Traceback::getMaxCoords(){
   int maxV = -1;

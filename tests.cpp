@@ -9,31 +9,62 @@
 #include <assert.h>
 
 vector<Variant> buildAllVariants(){
+  int refPos= 184258400;
+  
+  string query1 = "GGATGGCACAGACATCCACTTTAGCAAAGTGGAGTGCCTACTTGGAGCAGCAGAGCACACTGAGTACAAGTCCCCTTGCAGCAGAGTTGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGACCCTGAGCCTTCACCATCTAAGGAA";
+  string query2 = "GATGGCACAGACATCCACTTTAGCAAAGTGGAGTGCCTACTTGGAGCAGCAGAGCACACTGAGTACAAGTCCCCTTGCAGCAGAGTTGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGACCCTGAGCCTTCACCATCTAAGGAAAGG";
+  string query3 = "GGCACAGACATCCACTTTAGCAAAGTGGAGTGCCTACTTGGAGCAGCAGAGCACACTGAGTACAAGTCCCCTTGCAGCAGAGTTGCAAGAGGTCTTGGGACCTGTGGTCCTAATGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGAC";
+  string query4 = "CACAGACATCCACTTTAGCATTGTGGTGTGCCTACTTGGATCAGTAGATCACACTGAGTTCAAGTCTCCTTGCAGCTGAGTTGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGACCCTGAGCCTTCACCATCTATGGTTATGTGTCC";
+  string query5 = "CAGACATCCACTTTAGCAAAGTGGAGTGCCTACTTGGAGCAGCAGAGCACACTGAGTACAAGTCCCCGTGCAGCAGAGTTGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGACCCTGAGCCCTCACCATCTAAGGAAAGGTGTCCCC";
+  string query6 = "CATCCACTTTAGCAAAGTGGAGTGCCTACTTGGAGCAGCAGAGCACACTGAGTACAAGTCCCCTTGCAGCAGAGTTGCAAGAGGTCTTGGGACCTGTGGTCCTAATGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGACCCTGAGCC";
+  string query7 = "CCACTTTAGCAAAGTGGAGTGCCTACTTGGAGCAGCAGAGCACACTGAGTACAAGTCCCCTTGCAGCAGAGGTGCAAGAGGTCTTGGGACCTGTGGTCCTAATGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGACCCTGAGCCTTC";
+  string query8 = "ACTTTAGCAAAGTGGAGTGCCTACTTGGAGCAGCAGAGCACACTGAGTACAAGTCCCCTTGCAGCAGAGTTGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGACCCTGAGCCTTCACCATCTAAGGAAAGGTGTCCCCCCATTCCCA";
+  string query9 = "CTTTAGCAAAGTGGAGTGCCTACTTGGAGCAGCAGAGCACACTGAGTACAAGTCCCCTTGCAGCAGAGTTGCAAGAGGGCTTGGGACCTGTGGTCCTAATGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGACCCTGAGCCTTCACC";
+  string query10 = "TTAGCAAAGTGGAGTGCCTACTTGGAGCAGCAGAGCACACTGAGTACAAGTCCCCGTGCAGCAGAGTTGCAAGAGGTCTTGGGACCTGTGGTCCTAATGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGACCCTGAGCCTTCACCA";
+  string query11 = "AGCAAAGTGGAGTGCCTACTTGGAGCAGCAGAGCACACTGAGTACAAGTCCCCTTGCAGCAGAGTTGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGACCCTGAGCCTTCACCATCTAAGGAAAGGTGTCCCCCCATTCCCAATGGT";
+  string query12 = "GGAGTGCCTACTTGGAGCAGCAGAGCACACTGAGTACAAGTCCCCTTGCAGCAGAGTTGCAAGAGGTCTTGGGACCTGTGGTCCTAATGCAAGATAAGGCCACGGGGCCTGAGGCACCCCTAGACCCTGAGCCTTCACCATCTAAGGAA";
 
-  string query1 = "AAAAACTTTCTTTCTTTCCTTCCTT";
-  string query2 = "CTTTCTTTCTTTTCCTTTGGGGGGGGGG";
-  string query3 = "TTTCTTTCTTTCTTTTCCTTTAA";
-
-
-  std::pair<string,string> sv = std::make_pair("TT","TTCCT");
-
-  int pos1 = 15;
-  int pos2 = 10;
-  int pos3 = 13;
+  int pos1 = refPos-184258313;
+  int pos2 = refPos-184258314;
+  int pos3 = refPos-184258317;
+  int pos4 = refPos-184258319;
+  int pos5 = refPos-184258321;
+  int pos6 = refPos-184258325;
+  int pos7 = refPos-184258328;
+  int pos8 = refPos-184258330;
+  int pos9 = refPos-184258331;
+  int pos10 = refPos-184258333;
+  int pos11 = refPos-184258335;
+  int pos12 = refPos-184258343;
 
   Variant v1 = {query1, pos1};
   Variant v2 = {query2, pos2};
   Variant v3 = {query3, pos3};
-  // Variant v4 = {query4, pos4};
-
-
+  Variant v4 = {query4, pos4};
+  Variant v5 = {query5, pos5};
+  Variant v6 = {query6, pos6};
+  Variant v7 = {query7, pos7};
+  Variant v8 = {query8, pos8};
+  Variant v9 = {query9, pos9};
+  Variant v10 = {query10, pos10};
+  Variant v11 = {query11, pos11};
+  Variant v12 = {query12, pos12};
+  
   vector<Variant> variants;
   variants.push_back(v1);
   variants.push_back(v2);
   variants.push_back(v3);
-  //variants.push_back(v4);
-
-  return variants;
+  variants.push_back(v4);
+  variants.push_back(v5);
+  variants.push_back(v6);
+  //TODO: figure out how to deal with position check on varaints right before SV
+  //variants.push_back(v7);
+  variants.push_back(v8);
+  variants.push_back(v9);
+  variants.push_back(v10);
+  variants.push_back(v11);
+  variants.push_back(v12);
+   return variants;
 }
 
 
@@ -81,27 +112,23 @@ void checkTBMaxValue(vector<vector<vector<int> > > tbs, vector<Variant> variants
   cout << "Passed " << c << "/" << c << " traceback value bound tests\n";
 }
 
-void checkGraphEquality(vector<Traceback> tbs){
+void checkGraphEquality(vector<Traceback> tbs, int i){
   assert(tbs.size() > 0);
   if(tbs.size() == 1){
-    cout << "Passed all graph equality checks\n";
+    cout << "Passed " << i << "/" << i << " graph equality checks\n";
     return;
   }
   else{
     Traceback t1 = tbs.back();
     tbs.pop_back();
     Traceback t2 = tbs.back();
-    
     vector<Node *> sn1 = t1.subjectNodes_;
     vector<Node *> sn2 = t2.subjectNodes_;
-
-    assert(sn1.size() == 4);
-    assert(sn2.size() == 4);
-
+    assert(sn1.size() == 4 && sn2.size() == 4);
     for(unsigned i = 0; i < 4; i++){
       assert(sn1[i]->getSequence() == sn2[i]->getSequence());
     }
-    checkGraphEquality(tbs);
+    checkGraphEquality(tbs, ++i);
   }
   return;
 }
@@ -117,20 +144,28 @@ void printTracebacks(vector<vector<vector<int> > > tbs){
   }
 }
 
+void checkTrimmedVariants(vector<Variant> variants){
+  int s = variants.back().ref.size();
+  int c = 0;
+  for(auto it = std::begin(variants); it != std::end(variants); ++it){
+    assert(it->ref.size() ==s);
+    c++;
+  }
+  cout << "Passed " << c << "/" << c << " trimmed variant tests\n";
+}
+
 
 void runAllTests(){
-  static int D = 0;
-  static int H = 1;
-  static int V = 2;
   vector<Variant> variants = buildAllVariants();
-  std::pair<string,string> sv = std::make_pair("TT","TTCCT");
+  std::pair<string,string> sv = std::make_pair("TTGCAAGAGGTCTTGGGACCTGTGGTCCTAA","T");
   checkPos(variants, sv);
-  Variant ref = {"CTTTCTTTCTTTCCTTCCTT", 10};
+  Variant ref = {"TGAGTACAAGTCCCTTGCAGCAGAGTTGCAAGAGGTCTTGGGACCTGTGGTCCTAATGCAAGATAAGGCCA", 27};
   PileUp *p = new PileUp(variants, sv, ref);
-  checkGraphEquality(p->tbs_);
+  checkGraphEquality(p->tbs_,1);
   checkTracebackVectorSize(p->sumMatrix_);
   checkTBMaxValue(p->sumMatrix_, variants);
   checkDimsMatch(p->tbs_);
+  checkTrimmedVariants(p->variants_);
   printTracebacks(p->sumMatrix_);
 }
 
