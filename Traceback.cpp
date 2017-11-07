@@ -25,12 +25,12 @@ vector<vector<vector<int> > > Traceback::buildTBMs(){
   int l2 = ga_->getQueryLength();
   for (auto it = std::begin(subjectNodes_); it != std::end(subjectNodes_); ++it){
     int l1 = (*it)->getSequence().length();
-    MVM_ = ArrayUtil::buildArray2D(l2+1,l1+1);
-    vector<vector<int> > TBM = ArrayUtil::buildArray2D(l2+1,l1+1);
+    MVM_ = ArrayUtil::buildArray2D(l1+1,l2+1);
+    vector<vector<int> > TBM = ArrayUtil::buildArray2D(l1+1,l2+1);
     vector< vector< vector<int> > > S = GS[*it];
     for (int i2=0; i2<=l2; i2++) {
       for (int i1=0; i1<=l1; i1++) {
-	MVM_[i2][i1] = max(max(S[i1][i2][1],S[i1][i2][2]),S[i1][i2][0]);
+	MVM_[i1][i2] = max(max(S[i1][i2][1],S[i1][i2][2]),S[i1][i2][0]);
       }
     }
     MVMs_.push_back(MVM_);
@@ -56,9 +56,11 @@ vector<vector<vector<int> > > Traceback::buildTBMs(){
       else{
 	x--;
       }
+      cout << "x and y are " << x << " and " << y << "\n";
     } // end of while
     TBMs_.push_back(TBM);
   }// end of node loop
+  cout << "end of traceback\n";
   return TBMs_;
 }
 
